@@ -1,0 +1,148 @@
+<main class="layout">
+	<aside class="layout__panel layout__panel--left">
+		<section class="card profile">
+			<div class="profile__header">
+				<div class="profile__avatar">
+					<img src="https://i.pravatar.cc/96?img=56" alt="Avatar de João Travalini" loading="lazy" />
+					<span class="profile__status" aria-hidden="true"></span>
+				</div>
+				<div class="profile__info">
+					<h2 class="profile__name">Bruno Bianchi</h2>
+					<p class="profile__role">esportz · Tester</p>
+				</div>
+			</div>
+			<ul class="profile__stats">
+				<li>
+					<strong>128</strong>
+					<span>Conexões</span>
+				</li>
+				<li>
+					<strong>42</strong>
+					<span>Times</span>
+				</li>
+				<li>
+					<strong>12k</strong>
+					<span>Seguidores</span>
+				</li>
+			</ul>
+		</section>
+
+<nav class="card menu" aria-label="Menu principal">
+	<ul class="menu__list">
+		<li *ngFor="let item of navigationItems">
+			<button
+				type="button"
+				class="menu__item"
+				[class.menu__item--active]="item.active"
+			>
+				<span class="menu__icon" aria-hidden="true">{{ item.icon }}</span>
+				<span class="menu__label">{{ item.label }}</span>
+				<span *ngIf="item.badge" class="menu__badge">{{ item.badge }}</span>
+			</button>
+		</li>
+	</ul>
+</nav>
+
+
+		<footer class="footer-links">
+			<a *ngFor="let link of footerLinks" href="#">{{ link }}</a>
+		</footer>
+	</aside>
+
+	<section class="layout__center">
+		<header class="feed__header">
+			<h1>Feeds</h1>
+			<ul class="feed__tabs" role="tablist">
+				<li *ngFor="let tab of feedTabs">
+					<button
+						type="button"
+						role="tab"
+						[attr.aria-selected]="tab === selectedTab"
+						[class.feed__tab--active]="tab === selectedTab"
+						(click)="selectTab(tab)"
+					>
+						{{ tab }}
+					</button>
+				</li>
+			</ul>
+		</header>
+
+		<app-post-composer (submitPost)="handlePost($event)"></app-post-composer>
+
+			<article
+				class="card feed-card"
+				*ngFor="let item of feedItems"
+				[ngStyle]="{ '--feed-accent': item.accent }"
+			>
+			<header class="feed-card__header">
+				<div class="feed-card__avatar">
+					<img [src]="item.avatar" [alt]="'Avatar de ' + item.author" loading="lazy" />
+				</div>
+				<div class="feed-card__meta">
+					<h3>{{ item.author }}</h3>
+					<p>{{ item.role }}</p>
+				</div>
+				<span class="feed-card__time">{{ item.time }}</span>
+			</header>
+
+			<p class="feed-card__text">{{ item.content }}</p>
+
+			<ul class="feed-card__tags" *ngIf="item.tags.length">
+				<li *ngFor="let tag of item.tags">{{ tag }}</li>
+			</ul>
+
+			<div class="feed-card__gallery" *ngIf="item.images.length">
+				<img
+					*ngFor="let image of item.images"
+					[src]="image.url"
+					[alt]="image.alt"
+					loading="lazy"
+				/>
+			</div>
+
+			<footer class="feed-card__footer">
+				<div class="feed-card__stats">
+					<span>👍 {{ item.stats.likes | number }}</span>
+					<span>💬 {{ item.stats.comments | number }}</span>
+					<span>🔁 {{ item.stats.shares | number }}</span>
+				</div>
+				<button type="button" class="feed-card__cta">Wooow!</button>
+			</footer>
+		</article>
+	</section>
+
+	<aside class="layout__panel layout__panel--right">
+
+		<section class="card suggestions">
+			<header class="card__header">
+				<h2>Sugestões</h2>
+				<a href="#">Ver todos</a>
+			</header>
+			<ul class="suggestions__list">
+				<li *ngFor="let person of suggestions">
+					<article class="suggestion">
+						<img [src]="person.avatar" [alt]="'Avatar de ' + person.name" loading="lazy" />
+						<div class="suggestion__info">
+							<h3>{{ person.name }}</h3>
+							<p>{{ person.role }}</p>
+						</div>
+					</article>
+				</li>
+			</ul>
+		</section>
+
+		<section class="card recommendations">
+			<header class="card__header">
+				<h2>Recomendações</h2>
+			</header>
+			<ul class="recommendations__grid">
+				<li *ngFor="let item of recommendations">
+					<div class="recommendation" [style.background]="item.color">
+						<span aria-hidden="true">{{ item.icon }}</span>
+						<p>{{ item.title }}</p>
+					</div>
+				</li>
+			</ul>
+		</section>
+	</aside>
+</main>
