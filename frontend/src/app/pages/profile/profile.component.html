@@ -1,0 +1,348 @@
+<div class="profile-container">
+  <div class="loading-section" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Carregando perfil...</p>
+  </div>
+
+  <div class="profile-content" *ngIf="!loading && user">
+    <div class="profile-header-modern">
+      <div class="header-background">
+        <div class="gradient-overlay"></div>
+      </div>
+
+      <div class="header-main">
+        <div class="user-section">
+          <div class="avatar-large">
+            <img *ngIf="user.imgURL" [src]="user.imgURL" [alt]="user.name">
+            <div *ngIf="!user.imgURL" class="avatar-initials">
+              {{ userInitials }}
+            </div>
+          </div>
+
+          <div class="user-details">
+            <h1 class="display-name">{{ user.name }}</h1>
+            <p class="handle">{{ '@' + user.email.split('@')[0] }}</p>
+            <p class="bio" *ngIf="user.preferences">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              {{ user.preferences.favoriteSports.join(', ') || 'Nenhum esporte favorito' }}
+            </p>
+            <p class="join-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+              </svg>
+              Membro desde {{ user.createdAt | date:'MMMM yyyy' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button *ngIf="isOwnProfile" class="btn-action btn-primary" (click)="editProfile()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            Editar Perfil
+          </button>
+          <button *ngIf="!isOwnProfile" class="btn-action btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            Seguir
+          </button>
+
+          <button class="btn-action btn-strava" *ngIf="isOwnProfile && !isStravaConnected" (click)="connectStrava()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+            </svg>
+            Conectar Strava
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid-modern">
+      <div class="stat-box">
+        <div class="stat-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ followingCount }}</div>
+          <div class="stat-label">Seguindo</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ followerCount }}</div>
+          <div class="stat-label">Seguidores</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon purple">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ user.stats?.highlightsCreated || 0 }}</div>
+          <div class="stat-label">Destaques</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon orange">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ user.stats?.analysesCreated || 0 }}</div>
+          <div class="stat-label">Análises</div>
+        </div>
+      </div>
+
+      <div class="stat-box strava-box" *ngIf="isStravaConnected">
+        <div class="stat-icon strava">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">✓</div>
+          <div class="stat-label">Strava</div>
+        </div>
+      </div>
+
+      <div class="stat-box strava-disconnect-box" *ngIf="isOwnProfile && isStravaConnected">
+        <div class="stat-icon disconnect">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+        </div>
+        <div class="stat-info">
+          <button class="disconnect-btn" (click)="disconnectStrava()">
+            Desconectar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-tabs-modern">
+      <button class="nav-tab" [class.active]="activeTab === 'posts'" (click)="activeTab = 'posts'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+        </svg>
+        Posts
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'highlights'" (click)="activeTab = 'highlights'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        Destaques
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'analyses'" (click)="activeTab = 'analyses'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+        </svg>
+        Análises
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'workouts'" (click)="activeTab = 'workouts'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 2 10.57 8.43 17 12 20.57z"/>
+        </svg>
+        Treinos
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'stats'" (click)="activeTab = 'stats'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+        </svg>
+        Estatísticas
+      </button>
+    </div>
+
+    <div class="content-area">
+      <div class="tab-content" *ngIf="activeTab === 'posts'">
+        <div class="loading-state" *ngIf="postsLoading">
+          <p>Carregando posts...</p>
+        </div>
+
+        <div class="posts-list" *ngIf="!postsLoading && userPosts.length > 0">
+          <div class="post-card" *ngFor="let post of userPosts">
+            <div class="post-header">
+              <div class="post-author">
+                <div class="author-avatar">
+                  <img *ngIf="post.author?.imgURL" [src]="post.author?.imgURL" [alt]="post.author?.name || 'Usuário'">
+                  <span *ngIf="!post.author?.imgURL">{{ post.author?.name?.charAt(0) || 'U' }}</span>
+                </div>
+                <div class="author-info">
+                  <span class="author-name">{{ post.author?.name || 'Usuário' }}</span>
+                  <span class="post-date">{{ post.createdAt | date:'short' }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="post-content">
+              <p>{{ post.content }}</p>
+            </div>
+            <div class="post-actions">
+              <button class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>{{ (post.likes && post.likes.length) || 0 }}</span>
+              </button>
+              <button class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                </svg>
+                <span>{{ (post.comments && post.comments.length) || 0 }}</span>
+              </button>
+              <button class="action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!postsLoading && userPosts.length === 0">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+          </svg>
+          <p>Nenhum post ainda</p>
+        </div>
+      </div>
+
+      <div class="tab-content" *ngIf="activeTab === 'highlights'">
+        <div class="content-grid" *ngIf="user.highlights && user.highlights.length > 0">
+          <div class="content-card" *ngFor="let highlight of user.highlights">
+            <div class="card-thumbnail" *ngIf="highlight.thumbnailUrl">
+              <img [src]="highlight.thumbnailUrl" [alt]="highlight.title">
+            </div>
+            <div class="card-body">
+              <h3>{{ highlight.title }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!user.highlights || user.highlights.length === 0">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          <p>Nenhum destaque criado</p>
+        </div>
+      </div>
+
+      <div class="tab-content" *ngIf="activeTab === 'analyses'">
+        <div class="content-grid" *ngIf="user.tacticalAnalyses && user.tacticalAnalyses.length > 0">
+          <div class="content-card" *ngFor="let analysis of user.tacticalAnalyses">
+            <div class="card-body">
+              <h3>{{ analysis.title }}</h3>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="!user.tacticalAnalyses || user.tacticalAnalyses.length === 0">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+          </svg>
+          <p>Nenhuma análise tática criada</p>
+        </div>
+      </div>
+
+      <div class="tab-content" *ngIf="activeTab === 'workouts'">
+        <div class="workouts-header" *ngIf="isOwnProfile">
+          <div class="workouts-actions">
+            <button class="btn-action btn-strava" (click)="syncWorkouts()" [disabled]="workoutsLoading">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+              </svg>
+              {{ workoutsLoading ? 'Sincronizando...' : 'Sincronizar Strava' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="loading-state" *ngIf="workoutsLoading">
+          <div class="loading-spinner"></div>
+          <p>Carregando treinos...</p>
+        </div>
+
+        <div class="workouts-grid" *ngIf="!workoutsLoading && userWorkouts.length > 0">
+          <div class="workout-card" *ngFor="let workout of userWorkouts" (click)="viewWorkoutDetails(workout)">
+            <div class="workout-header">
+              <div class="workout-icon {{ workout.type }}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                  <path [attr.d]="_getWorkoutIconPath(workout.type)"/>
+                </svg>
+              </div>
+              <div class="workout-info">
+                <h3 class="workout-name">{{ workout.name }}</h3>
+                <p class="workout-type">{{ getWorkoutTypeName(workout.type) }}</p>
+              </div>
+            </div>
+            <div class="workout-stats">
+              <div class="workout-stat" *ngIf="workout.distance">
+                <span class="stat-value">{{ workoutService.formatDistance(workout.distance) }}</span>
+                <span class="stat-label">Distância</span>
+              </div>
+              <div class="workout-stat" *ngIf="workout.movingTime">
+                <span class="stat-value">{{ workoutService.formatDuration(workout.movingTime) }}</span>
+                <span class="stat-label">Duração</span>
+              </div>
+              <div class="workout-stat" *ngIf="workout.elevationGain">
+                <span class="stat-value">{{ workoutService.formatElevation(workout.elevationGain) }}</span>
+                <span class="stat-label">Elevação</span>
+              </div>
+            </div>
+            <div class="workout-date">
+              {{ workoutService.formatDate(workout.startDate) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!workoutsLoading && userWorkouts.length === 0">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 2 10.57 8.43 17 12 20.57z"/>
+          </svg>
+          <p *ngIf="!isStravaConnected">Conecte-se ao Strava para ver seus treinos</p>
+          <p *ngIf="isStravaConnected">Nenhum treino encontrado. Sincronize com o Strava para importar suas atividades.</p>
+          <button *ngIf="isOwnProfile && !isStravaConnected" class="btn-action btn-strava" (click)="connectStrava()">
+            Conectar Strava
+          </button>
+        </div>
+      </div>
+
+      <div class="tab-content" *ngIf="activeTab === 'stats'">
+        <div class="stats-detailed">
+          <div class="stat-detail-card">
+            <h3>Visualizações Totais</h3>
+            <div class="big-number">{{ user.stats?.totalViews || 0 }}</div>
+          </div>
+          <div class="stat-detail-card">
+            <h3>Curtidas Totais</h3>
+            <div class="big-number">{{ user.stats?.totalLikes || 0 }}</div>
+          </div>
+          <div class="stat-detail-card">
+            <h3>Esporte Favorito</h3>
+            <div class="big-text">{{ user.stats?.favoriteSport || 'Não definido' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="error-section" *ngIf="!loading && !user">
+    <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    </svg>
+    <p>Perfil não encontrado</p>
+  </div>
+</div>
+

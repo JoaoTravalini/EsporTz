@@ -1,0 +1,56 @@
+<div class="recommended-users-section">
+    <div class="section-header">
+        <h3>Quem seguir</h3>
+        <mat-icon>person_add</mat-icon>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="30"></mat-spinner>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !loading" class="error-container">
+        <p>{{ error }}</p>
+    </div>
+
+    <!-- Recommendations -->
+    <div *ngIf="!loading && !error" class="users-list">
+        <div *ngFor="let rec of recommendations" class="user-item">
+            <a [routerLink]="['/profile', rec.user.username]" class="user-link">
+                <img [src]="rec.user.profilePicture || '/assets/default-avatar.png'" alt="Avatar" class="avatar">
+
+                <div class="user-info">
+                    <div class="user-name">{{ rec.user.name || 'Usuário' }}</div>
+                    <div class="user-username">@{{ rec.user.username || 'user' }}</div>
+
+                    <!-- Shared Hashtags -->
+                    <div *ngIf="rec.sharedHashtags && rec.sharedHashtags.length > 0" class="shared-hashtags">
+                        <mat-icon class="hashtag-icon">tag</mat-icon>
+                        <span class="hashtags-text">
+                            {{ formatSharedHashtags(rec.sharedHashtags) }}
+                        </span>
+                    </div>
+
+                    <!-- Reasons -->
+                    <div class="reasons">
+                        <span *ngFor="let reason of rec.reasons" class="reason-badge">
+                            {{ formatReason(reason) }}
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <button mat-raised-button [class.following]="isFollowing(rec.user.id)"
+                (click)="onFollowClick(rec.user, $event)" class="follow-button">
+                {{ isFollowing(rec.user.id) ? 'Seguindo' : 'Seguir' }}
+            </button>
+        </div>
+
+        <!-- Empty state -->
+        <div *ngIf="recommendations.length === 0" class="empty-state">
+            <mat-icon>person_search</mat-icon>
+            <p>Nenhuma sugestão disponível no momento</p>
+        </div>
+    </div>
+</div>

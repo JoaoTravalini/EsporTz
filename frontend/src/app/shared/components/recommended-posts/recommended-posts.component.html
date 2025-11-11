@@ -1,0 +1,71 @@
+<div class="recommended-section">
+  <div class="recommended-header">
+    <h3>Recomendado para você</h3>
+    <mat-icon>auto_awesome</mat-icon>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="30"></mat-spinner>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Recommendations -->
+  <div *ngIf="!loading && !error" class="recommendations-list">
+    <div 
+      *ngFor="let rec of recommendations" 
+      class="recommendation-item">
+      <!-- Post Card -->
+      <div class="post-card">
+        <div class="post-header">
+          <img 
+            [src]="rec.post.author?.profilePicture || '/assets/default-avatar.png'" 
+            alt="Avatar" 
+            class="avatar">
+          <div class="post-author">
+            <span class="author-name">{{ rec.post.author?.name || 'Usuário' }}</span>
+            <span class="author-username">@{{ rec.post.author?.username || 'user' }}</span>
+          </div>
+        </div>
+        
+        <div class="post-content">
+          {{ rec.post.content }}
+        </div>
+
+        <!-- Reasons -->
+        <div class="recommendation-reasons">
+          <mat-chip-set>
+            <mat-chip 
+              *ngFor="let reason of rec.reasons" 
+              class="reason-chip">
+              <mat-icon class="reason-icon">{{ getReasonIcon(reason) }}</mat-icon>
+              {{ formatReason(reason) }}
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+
+        <!-- Actions -->
+        <div class="post-actions">
+          <button class="action-button">
+            <mat-icon>favorite_border</mat-icon>
+            <span>{{ rec.post.likes?.length || 0 }}</span>
+          </button>
+          <button class="action-button">
+            <mat-icon>chat_bubble_outline</mat-icon>
+            <span>{{ rec.post.comments?.length || 0 }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="recommendations.length === 0" class="empty-state">
+      <mat-icon>auto_awesome</mat-icon>
+      <p>Nenhuma recomendação disponível no momento</p>
+    </div>
+  </div>
+</div>

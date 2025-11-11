@@ -1,0 +1,96 @@
+<nav class="navbar">
+	<div class="navbar__brand">
+		<span class="brand__icon" aria-hidden="true"></span>
+		<span class="brand__text">sport<span class="brand__accent">z</span></span>
+	</div>
+
+	<ul class="navbar__links">
+		<li><a routerLink="/">Home</a></li>
+		<li><a href="#">Atletas</a></li>
+		<li class="navbar__dropdown">
+			<button type="button" aria-haspopup="true" aria-expanded="false">
+				Comunidade
+				<span class="caret" aria-hidden="true"></span>
+			</button>
+		</li>
+	</ul>
+
+	<div class="navbar__actions" *ngIf="currentUser$ | async as user; else authButtons">
+		<div class="user-menu" (clickOutside)="closeUserMenu()">
+			<button
+				type="button"
+				class="user-menu__trigger"
+				(click)="toggleUserMenu()"
+				[attr.aria-expanded]="isUserMenuOpen"
+				aria-haspopup="true"
+			>
+				<div class="user-avatar" *ngIf="!user.imgURL">
+					{{ userInitials }}
+				</div>
+				<img
+					*ngIf="user.imgURL"
+					[src]="user.imgURL"
+					[alt]="user.name"
+					class="user-avatar user-avatar--image"
+				/>
+			</button>
+
+			<div class="user-menu__dropdown" *ngIf="isUserMenuOpen">
+				<div class="user-menu__header">
+					<div class="user-avatar user-avatar--small" *ngIf="!user.imgURL">
+						{{ userInitials }}
+					</div>
+					<img
+						*ngIf="user.imgURL"
+						[src]="user.imgURL"
+						[alt]="user.name"
+						class="user-avatar user-avatar--small user-avatar--image"
+					/>
+					<div class="user-menu__info">
+						<div class="user-menu__name">{{ user.name }}</div>
+						<div class="user-menu__email">{{ user.email }}</div>
+					</div>
+				</div>
+
+				<div class="user-menu__divider"></div>
+
+				<nav class="user-menu__nav">
+					<a [routerLink]="['/profile', user.id]" class="user-menu__item" (click)="closeUserMenu()">
+						<span class="user-menu__icon">👤</span>
+						Meu Perfil
+					</a>
+					<a routerLink="/highlights" class="user-menu__item" (click)="closeUserMenu()">
+						<span class="user-menu__icon">🎬</span>
+						Destaques
+					</a>
+					<a routerLink="/tactical" class="user-menu__item" (click)="closeUserMenu()">
+						<span class="user-menu__icon">📊</span>
+						Análises Táticas
+					</a>
+					<a routerLink="/statistics" class="user-menu__item" (click)="closeUserMenu()">
+						<span class="user-menu__icon">📈</span>
+						Estatísticas
+					</a>
+					<a href="#" class="user-menu__item" (click)="closeUserMenu()">
+						<span class="user-menu__icon">⚙️</span>
+						Configurações
+					</a>
+				</nav>
+
+				<div class="user-menu__divider"></div>
+
+				<button type="button" class="user-menu__item user-menu__item--logout" (click)="logout()">
+					<span class="user-menu__icon">🚪</span>
+					Sair
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<ng-template #authButtons>
+		<div class="navbar__actions">
+			<a class="btn btn--ghost" routerLink="/login">Entrar</a>
+			<a class="btn btn--primary" routerLink="/register">Criar conta</a>
+		</div>
+	</ng-template>
+</nav>

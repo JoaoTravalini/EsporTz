@@ -1,0 +1,70 @@
+<div class="hashtag-page">
+  <div class="hashtag-header">
+    <button class="back-button" routerLink="/">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div class="hashtag-info">
+      <h1 class="hashtag-title">#{{ tag }}</h1>
+      <p class="hashtag-subtitle" *ngIf="posts.length > 0">
+        {{ posts.length }} {{ posts.length === 1 ? 'post' : 'posts' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="posts-container">
+    <div *ngIf="loading && posts.length === 0" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Carregando posts...</p>
+    </div>
+
+    <div *ngIf="error" class="error-container">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error }}</p>
+      <button class="retry-button" (click)="loadPosts()">
+        Tentar novamente
+      </button>
+    </div>
+
+    <div *ngIf="!loading || posts.length > 0" class="posts-list">
+      <div *ngFor="let post of posts" class="post-item">
+        <div class="post-card">
+          <div class="post-header">
+            <img [src]="post.author?.profilePicture || '/assets/default-avatar.png'" 
+                 alt="Avatar" 
+                 class="avatar">
+            <div class="post-author">
+              <span class="author-name">{{ post.author?.name || 'Usuário' }}</span>
+              <span class="author-username">{{ post.author?.username || 'user' }}</span>
+            </div>
+          </div>
+          <div class="post-content" [innerHTML]="post.content"></div>
+          <div class="post-actions">
+            <button class="action-button">
+              <mat-icon>favorite_border</mat-icon>
+              <span>{{ post.likes?.length || 0 }}</span>
+            </button>
+            <button class="action-button">
+              <mat-icon>chat_bubble_outline</mat-icon>
+              <span>{{ post.comments?.length || 0 }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="loading && posts.length > 0" class="loading-more">
+        <mat-spinner diameter="30"></mat-spinner>
+      </div>
+
+      <div *ngIf="!hasMore && posts.length > 0" class="no-more">
+        <p>Não há mais posts</p>
+      </div>
+
+      <div *ngIf="posts.length === 0 && !loading && !error" class="empty-state">
+        <mat-icon>tag</mat-icon>
+        <h3>Nenhum post encontrado</h3>
+        <p>Seja o primeiro a usar #{{ tag }}!</p>
+      </div>
+    </div>
+  </div>
+</div>
+

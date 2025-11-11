@@ -1,0 +1,267 @@
+<section class="composer" [class.composer--expanded]="isExpanded">
+  <header class="composer__top">
+    <div class="avatar" aria-hidden="true">{{ userInitials }}</div>
+    <button
+      *ngIf="!isExpanded"
+      type="button"
+      class="composer__prompt"
+      (click)="openComposer()"
+    >
+      Comece uma publicação
+    </button>
+    <div *ngIf="isExpanded" class="composer__input-area">
+      <textarea
+        class="composer__textarea"
+        rows="4"
+        placeholder="Compartilhe seus treinos, resultados ou insights esportivos"
+        [(ngModel)]="postContent"
+      ></textarea>
+    </div>
+
+    <!-- Treinos selecionados -->
+    <div
+      *ngIf="isExpanded && hasSelectedWorkouts"
+      class="selected-workouts composer__selected-workouts"
+      [ngStyle]="{'--selected-accent': getWorkoutAccent(getSelectedAccentType())}"
+    >
+      <div class="selected-workouts__header">
+        <div class="selected-workouts__headline">
+          <div class="selected-workouts__icon">
+            <mat-icon>fitness_center</mat-icon>
+          </div>
+          <div class="selected-workouts__title-group">
+            <span class="selected-workouts__title">Treinos selecionados</span>
+            <span class="selected-workouts__subtitle">
+              {{ selectedWorkoutsCount }} selecionado{{ selectedWorkoutsCount === 1 ? '' : 's' }}
+              <ng-container *ngIf="selectedWorkoutsSummary">· {{ selectedWorkoutsSummary }}</ng-container>
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          mat-icon-button
+          (click)="clearSelectedWorkouts()"
+          class="selected-workouts__clear"
+          [attr.aria-label]="'Limpar ' + selectedWorkoutsCount + ' treinos selecionados'"
+        >
+          <mat-icon>clear</mat-icon>
+        </button>
+      </div>
+
+      <div class="selected-workouts__list">
+        <article
+          *ngFor="let workout of selectedWorkouts; trackBy: trackByWorkoutId"
+          class="selected-workouts__item"
+          [ngStyle]="{'--item-accent': getWorkoutAccent(workout.type)}"
+        >
+          <div class="item__icon">
+            <mat-icon>{{ getWorkoutIcon(workout.type) }}</mat-icon>
+          </div>
+
+          <div class="item__body">
+            <div class="item__header">
+              <div class="item__name" [matTooltip]="workout.name">{{ workout.name }}</div>
+              <button
+                type="button"
+                mat-icon-button
+                (click)="removeWorkout(workout)"
+                class="item__remove"
+                [attr.aria-label]="'Remover ' + workout.name"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <div class="item__meta">
+              <span class="meta-pill meta-pill--type">{{ getWorkoutTypeName(workout.type) }}</span>
+              <span class="meta-pill">{{ workoutService.formatDate(workout.startDate) }}</span>
+              <span *ngIf="workout.distance" class="meta-pill">
+                {{ workoutService.formatDistance(workout.distance) }}
+              </span>
+              <span *ngIf="workout.movingTime" class="meta-pill">
+                {{ workoutService.formatDuration(workout.movingTime) }}
+              </span>
+            </div>
+
+            <div class="item__stats">
+              <div *ngIf="workout.distance" class="stat">
+                <mat-icon>straighten</mat-icon>
+                <div>
+                  <span class="stat__label">Distância</span>
+                  <span class="stat__value">{{ workoutService.formatDistance(workout.distance) }}</span>
+                </div>
+              </div>
+              <div *ngIf="workout.movingTime" class="stat">
+                <mat-icon>schedule</mat-icon>
+                <div>
+                  <span class="stat__label">Tempo</span>
+                  <span class="stat__value">{{ workoutService.formatDuration(workout.movingTime) }}</span>
+                </div>
+              </div>
+              <div *ngIf="workout.averageSpeed" class="stat">
+                <mat-icon>speed</mat-icon>
+                <div>
+                  <span class="stat__label">Vel. Média</span>
+                  <span class="stat__value">{{ workoutService.formatSpeed(workout.averageSpeed) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </header>
+
+  <p *ngIf="isExpanded" class="composer__context">
+    <span class="composer__name">{{ userName }}</span>
+    <span class="composer__title">{{ userTitle }}</span>
+    <span class="composer__hint">Sua publicação aparece para fãs e equipes que você segue.</span>
+  </p>
+
+  <div *ngIf="isExpanded" class="composer__divider" aria-hidden="true"></div>
+
+  <footer class="composer__bottom">
+    <div class="composer__actions" role="list">
+      <button
+        type="button"
+        class="action"
+        *ngFor="let action of actions"
+        [attr.aria-label]="action.description"
+  [class.action--disabled]="action.requiresStrava && !isStravaConnected"
+  [class.action--active]="activeAction === action.icon || (action.icon === 'workout' && hasSelectedWorkouts)"
+        [attr.title]="action.requiresStrava && !isStravaConnected ? 'Conecte-se ao Strava para usar esta funcionalidade' : action.description"
+        (click)="handleActionClick(action)"
+      >
+        <span class="action__icon" aria-hidden="true" [ngSwitch]="action.icon">
+          <svg *ngSwitchCase="'highlight'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.5 4.5L13 1L19.5 4.5L22 12.5L19 20.5H7L4 12.5L6.5 4.5Z" fill="#FFD1A0" stroke="#1F2530" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M11 9.5L16 12.5L11 15.5V9.5Z" fill="#FFFFFF"/>
+          </svg>
+          <svg *ngSwitchCase="'stats'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="10" width="4" height="12" rx="1.5" fill="#1F2530"/>
+            <rect x="10.5" y="6" width="4" height="16" rx="1.5" fill="#FFA163"/>
+            <rect x="18" y="12" width="4" height="10" rx="1.5" fill="#1F2530"/>
+            <path d="M4 6L9 9L15 5.5L20 8L22.5 6" stroke="#FFB075" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <svg *ngSwitchCase="'analysis'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="4" width="16" height="18" rx="2" fill="#FFD1A0"/>
+            <path d="M8 9H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 13H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M8 17H14" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
+            <circle cx="19.5" cy="19.5" r="4" fill="#1F2530"/>
+            <path d="M19.5 17.5V21.5M17.5 19.5H21.5" stroke="#FFE2B2" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <mat-icon *ngSwitchCase="'workout'" class="workout-action-icon">
+            fitness_center
+          </mat-icon>
+          <mat-icon *ngSwitchCase="'route'" class="route-action-icon">
+            route
+          </mat-icon>
+          <mat-icon *ngSwitchCase="'achievement'" class="achievement-action-icon">
+            emoji_events
+          </mat-icon>
+          <mat-icon *ngSwitchCase="'challenge'" class="challenge-action-icon">
+            flag
+          </mat-icon>
+        </span>
+        <span class="action__label">
+          {{ action.label }}
+          <span *ngIf="action.icon === 'workout' && hasSelectedWorkouts" class="action-badge">
+            {{ selectedWorkoutsCount }}
+          </span>
+        </span>
+      </button>
+    </div>
+
+    <div *ngIf="activeAction && isExpanded" class="composer__action-panel">
+      <ng-container [ngSwitch]="activeAction">
+        <div *ngSwitchCase="'highlight'" class="panel panel--highlight">
+          <h4>Gerador de highlight</h4>
+          <p>Receba um roteiro instantâneo para contar seu momento mais marcante.</p>
+
+          <div class="highlight-preview" *ngIf="highlightSuggestion as suggestion">
+            <h5>{{ suggestion.headline }}</h5>
+            <span class="highlight-preview__tone">{{ suggestion.subHeadline }}</span>
+            <ul>
+              <li *ngFor="let point of suggestion.bulletPoints">{{ point }}</li>
+            </ul>
+          </div>
+
+          <div class="panel__actions">
+            <button type="button" class="btn btn--ghost" (click)="regenerateHighlightSuggestion()">
+              Gerar outra ideia
+            </button>
+            <button type="button" class="btn btn--primary" (click)="applyHighlightTemplate()">
+              Usar no post
+            </button>
+          </div>
+        </div>
+        <div *ngSwitchCase="'stats'" class="panel panel--stats">
+          <h4>Estatísticas do treino</h4>
+          <p>Compartilhe métricas relevantes como distância, duração e ritmo.</p>
+          <button type="button" class="btn btn--ghost" (click)="applyStatsTemplate()">
+            Adicionar template de estatísticas
+          </button>
+        </div>
+        <div *ngSwitchCase="'analysis'" class="panel panel--analysis">
+          <h4>Análise tática</h4>
+          <p>Descreva objetivos, pontos fortes e ajustes necessários para evoluir.</p>
+          <button type="button" class="btn btn--ghost" (click)="applyAnalysisTemplate()">
+            Inserir plano de análise
+          </button>
+        </div>
+        <div *ngSwitchCase="'achievement'" class="panel panel--achievement">
+          <h4>Nova conquista</h4>
+          <p>Comemore medalhas, recordes pessoais ou metas alcançadas.</p>
+          <button type="button" class="btn btn--ghost" (click)="applyAchievementTemplate()">
+            Inserir mensagem de conquista
+          </button>
+        </div>
+        <div *ngSwitchCase="'challenge'" class="panel panel--challenge">
+          <h4>Desafio esportivo</h4>
+          <p>Lance um desafio à comunidade ou conte como está participando de um.</p>
+          <button type="button" class="btn btn--ghost" (click)="applyChallengeTemplate()">
+            Adicionar estrutura de desafio
+          </button>
+        </div>
+        <div *ngSwitchCase="'route'" class="panel panel--route">
+          <h4>Percurso detalhado</h4>
+          <p>Destaque o trajeto, pontos marcantes e dicas de rota.</p>
+          <button type="button" class="btn btn--ghost" (click)="applyRouteTemplate()">
+            Inserir recado sobre o percurso
+          </button>
+        </div>
+        <div *ngSwitchCase="'workout'" class="panel panel--workout">
+          <h4>Treinos selecionados</h4>
+          <p *ngIf="hasSelectedWorkouts">{{ selectedWorkoutsSummary }}</p>
+          <p *ngIf="!hasSelectedWorkouts">Selecione até 10 atividades para adicionar ao post.</p>
+          <div class="panel__actions">
+            <button type="button" class="btn btn--ghost" (click)="openWorkoutSelector()">
+              Escolher atividades
+            </button>
+            <button
+              type="button"
+              class="btn btn--ghost"
+              *ngIf="hasSelectedWorkouts"
+              (click)="clearSelectedWorkouts()"
+            >
+              Limpar seleção
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div *ngIf="isExpanded" class="composer__controls">
+      <button type="button" class="btn btn--ghost" (click)="handleCancel()">Cancelar</button>
+      <button
+        type="button"
+        class="btn btn--primary"
+        [disabled]="!canSubmit"
+        (click)="handleSubmit()"
+      >
+        Publicar
+      </button>
+    </div>
+  </footer>
+</section>

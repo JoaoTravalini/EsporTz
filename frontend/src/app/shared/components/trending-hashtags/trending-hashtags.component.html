@@ -1,0 +1,48 @@
+<div class="trending-section">
+  <div class="trending-header">
+    <h3>Trending</h3>
+    <mat-icon class="trending-icon">whatshot</mat-icon>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="30"></mat-spinner>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-container">
+    <p>{{ error }}</p>
+    <button class="retry-button" (click)="loadTrending()">
+      Tentar novamente
+    </button>
+  </div>
+
+  <!-- Trending List -->
+  <div *ngIf="!loading && !error" class="trending-list">
+    <a *ngFor="let trending of trendingHashtags; let i = index" [routerLink]="['/hashtags', trending.tag]"
+      class="trending-item">
+      <div class="trending-rank">{{ i + 1 }}</div>
+      <div class="trending-content">
+        <div class="trending-tag-wrapper">
+          <span class="trending-tag">#{{ trending.displayTag }}</span>
+          <mat-icon *ngIf="trending.isTrending" class="trending-up-icon"
+            [matTooltip]="'Crescimento: ' + trending.growthRate.toFixed(1) + '%'">
+            trending_up
+          </mat-icon>
+        </div>
+        <div class="trending-stats">
+          <span class="post-count">{{ trending.postCount }} posts</span>
+          <span class="user-count" *ngIf="trending.userCount > 0">
+            · {{ trending.userCount }} {{ trending.userCount === 1 ? 'pessoa' : 'pessoas' }}
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <!-- Empty state -->
+    <div *ngIf="trendingHashtags.length === 0" class="empty-state">
+      <mat-icon>tag</mat-icon>
+      <p>Nenhuma hashtag em alta no momento</p>
+    </div>
+  </div>
+</div>

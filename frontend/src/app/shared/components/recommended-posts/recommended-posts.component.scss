@@ -1,0 +1,192 @@
+.recommended-section {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+.recommended-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+  }
+
+  mat-icon {
+    color: var(--color-secondary);
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+
+  p {
+    margin: var(--spacing-sm) 0;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+  }
+}
+
+.recommendations-list {
+  .recommendation-item {
+    border-bottom: 1px solid var(--color-border-light);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .post-card {
+      padding: var(--spacing-lg);
+      transition: background 0.2s ease;
+      cursor: pointer;
+
+      &:hover {
+        background: var(--color-bg-hover);
+      }
+
+      .post-header {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: var(--radius-full);
+          object-fit: cover;
+        }
+
+        .post-author {
+          display: flex;
+          flex-direction: column;
+
+          .author-name {
+            font-weight: 700;
+            color: var(--color-text-primary);
+            font-size: 15px;
+          }
+
+          .author-username {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+          }
+        }
+      }
+
+      .post-content {
+        color: var(--color-text-primary);
+        font-size: 15px;
+        line-height: 1.5;
+        margin-bottom: var(--spacing-md);
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .recommendation-reasons {
+        margin-bottom: var(--spacing-md);
+
+        mat-chip-set {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--spacing-xs);
+        }
+
+        .reason-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding: 4px 12px;
+          background: var(--color-primary-light);
+          color: var(--color-primary);
+          border-radius: var(--radius-full);
+          font-size: 12px;
+          font-weight: 600;
+          border: 1px solid var(--color-primary);
+
+          .reason-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+        }
+      }
+
+      .post-actions {
+        display: flex;
+        gap: var(--spacing-xl);
+
+        .action-button {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-xs);
+          padding: var(--spacing-xs) var(--spacing-sm);
+          background: transparent;
+          border: none;
+          color: var(--color-text-secondary);
+          border-radius: var(--radius-full);
+          cursor: pointer;
+          transition: all 0.2s ease;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+
+          span {
+            font-size: 13px;
+          }
+
+          &:hover {
+            color: var(--color-primary);
+            background: var(--color-primary-light);
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    text-align: center;
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: var(--color-text-secondary);
+      opacity: 0.5;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+    }
+  }
+}

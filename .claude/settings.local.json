@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm run dev)",
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(tree:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

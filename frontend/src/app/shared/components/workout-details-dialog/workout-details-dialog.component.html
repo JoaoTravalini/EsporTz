@@ -1,0 +1,220 @@
+<div class="workout-details-dialog">
+  <!-- Header -->
+  <div class="dialog-header">
+    <div class="activity-type">
+      <mat-icon>{{ getActivityIcon(data.activity.type) }}</mat-icon>
+      <span>{{ getActivityTypeName(data.activity.type) }}</span>
+    </div>
+
+    <button mat-icon-button (click)="onClose()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dialog-content">
+    <!-- Título e Data -->
+    <div class="activity-header">
+      <h2 class="activity-title">{{ data.activity.name }}</h2>
+      <div class="activity-date">
+        <mat-icon>event</mat-icon>
+        {{ formatDate(data.activity.startDate) }}
+      </div>
+    </div>
+
+    <!-- Métricas Principais -->
+    <div class="metrics-grid">
+      <!-- Distância -->
+      <div *ngIf="data.activity.distance" class="metric-card primary">
+        <mat-icon class="metric-icon">straighten</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">
+            {{ workoutService.formatDistance(data.activity.distance) }}
+          </div>
+          <div class="metric-label">Distância</div>
+        </div>
+      </div>
+
+      <!-- Tempo -->
+      <div *ngIf="data.activity.movingTime" class="metric-card primary">
+        <mat-icon class="metric-icon">schedule</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">
+            {{ workoutService.formatDuration(data.activity.movingTime) }}
+          </div>
+          <div class="metric-label">Tempo de Movimento</div>
+        </div>
+      </div>
+
+      <!-- Velocidade Média -->
+      <div *ngIf="data.activity.averageSpeed" class="metric-card primary">
+        <mat-icon class="metric-icon">speed</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">
+            {{ workoutService.formatSpeed(data.activity.averageSpeed) }}
+          </div>
+          <div class="metric-label">Velocidade Média</div>
+        </div>
+      </div>
+
+      <!-- Ritmo (para corridas) -->
+      <div *ngIf="data.activity.type === 'run' && calculatePace(data.activity)" class="metric-card secondary">
+        <mat-icon class="metric-icon">timer</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">{{ calculatePace(data.activity) }}</div>
+          <div class="metric-label">Ritmo Médio</div>
+        </div>
+      </div>
+
+      <!-- Frequência Cardíaca Média -->
+      <div *ngIf="data.activity.averageHeartRate" class="metric-card secondary">
+        <mat-icon class="metric-icon">favorite</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">{{ Math.round(data.activity.averageHeartRate) }} bpm</div>
+          <div class="metric-label">FC Média</div>
+        </div>
+      </div>
+
+      <!-- Potência Média -->
+      <div *ngIf="data.activity.averagePower" class="metric-card secondary">
+        <mat-icon class="metric-icon">bolt</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">{{ Math.round(data.activity.averagePower) }} W</div>
+          <div class="metric-label">Potência Média</div>
+        </div>
+      </div>
+
+      <!-- Ganho de Elevação -->
+      <div *ngIf="data.activity.elevationGain" class="metric-card secondary">
+        <mat-icon class="metric-icon">terrain</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">{{ Math.round(data.activity.elevationGain) }} m</div>
+          <div class="metric-label">Ganho de Elevação</div>
+        </div>
+      </div>
+
+      <!-- Calorias Estimadas -->
+      <div class="metric-card secondary">
+        <mat-icon class="metric-icon">local_fire_department</mat-icon>
+        <div class="metric-content">
+          <div class="metric-value">{{ estimateCalories(data.activity) }}</div>
+          <div class="metric-label">Calorias (est.)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nível de Esforço -->
+    <div class="effort-section">
+      <h3>Nível de Esforço</h3>
+      <div class="effort-indicator" [style.color]="getEffortLevel(data.activity).color">
+        <mat-icon>fitness_center</mat-icon>
+        <span>{{ getEffortLevel(data.activity).label }}</span>
+      </div>
+    </div>
+
+    <!-- Descrição -->
+    <div *ngIf="data.activity.description" class="description-section">
+      <h3>Descrição</h3>
+      <p class="description-text">{{ data.activity.description }}</p>
+    </div>
+
+    <!-- Estatísticas Adicionais -->
+    <div class="additional-stats">
+      <h3>Estatísticas Detalhadas</h3>
+
+      <div class="stats-grid">
+        <!-- Tempo Total -->
+        <div *ngIf="data.activity.elapsedTime" class="stat-item">
+          <span class="stat-label">Tempo Total:</span>
+          <span class="stat-value">{{ workoutService.formatDuration(data.activity.elapsedTime) }}</span>
+        </div>
+
+        <!-- Velocidade Máxima -->
+        <div *ngIf="data.activity.maxSpeed" class="stat-item">
+          <span class="stat-label">Velocidade Máxima:</span>
+          <span class="stat-value">{{ workoutService.formatSpeed(data.activity.maxSpeed) }}</span>
+        </div>
+
+        <!-- FC Máxima -->
+        <div *ngIf="data.activity.maxHeartRate" class="stat-item">
+          <span class="stat-label">FC Máxima:</span>
+          <span class="stat-value">{{ data.activity.maxHeartRate }} bpm</span>
+        </div>
+
+        <!-- Cadência Média -->
+        <div *ngIf="data.activity.averageCadence" class="stat-item">
+          <span class="stat-label">Cadência Média:</span>
+          <span class="stat-value">{{ Math.round(data.activity.averageCadence) }} rpm</span>
+        </div>
+
+        <!-- Potência Máxima -->
+        <div *ngIf="data.activity.maxPower" class="stat-item">
+          <span class="stat-label">Potência Máxima:</span>
+          <span class="stat-value">{{ data.activity.maxPower }} W</span>
+        </div>
+
+        <!-- Elevação Máxima -->
+        <div *ngIf="data.activity.elevationHigh" class="stat-item">
+          <span class="stat-label">Elevação Máxima:</span>
+          <span class="stat-value">{{ Math.round(data.activity.elevationHigh) }} m</span>
+        </div>
+
+        <!-- Elevação Mínima -->
+        <div *ngIf="data.activity.elevationLow" class="stat-item">
+          <span class="stat-label">Elevação Mínima:</span>
+          <span class="stat-value">{{ Math.round(data.activity.elevationLow) }} m</span>
+        </div>
+
+        <!-- Kudos do Strava -->
+        <div *ngIf="data.activity.kudosCount" class="stat-item">
+          <span class="stat-label">Kudos:</span>
+          <span class="stat-value">{{ data.activity.kudosCount }}</span>
+        </div>
+
+        <!-- Comentários -->
+        <div *ngIf="data.activity.commentCount" class="stat-item">
+          <span class="stat-label">Comentários:</span>
+          <span class="stat-value">{{ data.activity.commentCount }}</span>
+        </div>
+
+        <!-- Fotos -->
+        <div *ngIf="data.activity.photoCount" class="stat-item">
+          <span class="stat-label">Fotos:</span>
+          <span class="stat-value">{{ data.activity.photoCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informações do Strava -->
+    <div class="strava-info">
+      <h3>Informações do Strava</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">ID Strava:</span>
+          <span class="info-value">{{ data.activity.stravaId }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">ID Atleta:</span>
+          <span class="info-value">{{ data.activity.athleteId }}</span>
+        </div>
+        <div *ngIf="data.activity.sportType" class="info-item">
+          <span class="info-label">Esporte:</span>
+          <span class="info-value">{{ data.activity.sportType }}</span>
+        </div>
+        <div *ngIf="data.activity.lastSyncAt" class="info-item">
+          <span class="info-label">Última Sincronização:</span>
+          <span class="info-value">{{ formatDate(data.activity.lastSyncAt) }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Privado:</span>
+          <span class="info-value">{{ data.activity.isPrivate ? 'Sim' : 'Não' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="dialog-actions">
+    <button mat-button (click)="onClose()">Fechar</button>
+  </div>
+</div>

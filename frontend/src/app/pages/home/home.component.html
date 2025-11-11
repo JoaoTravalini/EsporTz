@@ -1,0 +1,323 @@
+<main class="layout">
+	<aside class="layout__panel layout__panel--left">
+		<section class="card profile" *ngIf="currentUser">
+			<div class="profile__header">
+				<div class="profile__avatar">
+					<img
+						*ngIf="currentUser.imgURL"
+						[src]="currentUser.imgURL"
+						[alt]="'Avatar de ' + currentUser.name"
+						loading="lazy" />
+					<div *ngIf="!currentUser.imgURL" class="profile__avatar-placeholder">
+						{{ userInitials }}
+					</div>
+					<span class="profile__status" aria-hidden="true"></span>
+				</div>
+				<div class="profile__info">
+					<h2 class="profile__name">{{ currentUser.name }}</h2>
+					<p class="profile__role">esportz · {{ currentUser.provider || 'Usuário' }}</p>
+				</div>
+			</div>
+			<ul class="profile__stats">
+				<li>
+					<strong>{{ followingCount }}</strong>
+					<span>Seguindo</span>
+				</li>
+				<li>
+					<strong>{{ teamsCount }}</strong>
+					<span>Times</span>
+				</li>
+				<li>
+					<strong>{{ followersCount }}</strong>
+					<span>Seguidores</span>
+				</li>
+			</ul>
+		</section>
+
+<nav class="card menu" aria-label="Menu principal">
+	<ul class="menu__list">
+		<li *ngFor="let item of navigationItems">
+			<button
+				type="button"
+				class="menu__item"
+				[class.menu__item--active]="item.active"
+			>
+				<span class="menu__icon" aria-hidden="true">
+					<svg *ngIf="item.icon === 'newspaper'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+					</svg>
+					<svg *ngIf="item.icon === 'message'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+					</svg>
+					<svg *ngIf="item.icon === 'forum'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/>
+					</svg>
+					<svg *ngIf="item.icon === 'people'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+					</svg>
+					<svg *ngIf="item.icon === 'video'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M18 3v2h-2V3H8v2H6V3H4v18h2v-2h2v2h8v-2h2v2h2V3h-2zM8 17H6v-2h2v2zm0-4H6v-2h2v2zm0-4H6V7h2v2zm10 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+					</svg>
+					<svg *ngIf="item.icon === 'settings'" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+						<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+					</svg>
+				</span>
+				<span class="menu__label">{{ item.label }}</span>
+				<span *ngIf="item.badge && item.badge > 0" class="menu__badge">{{ item.badge }}</span>
+			</button>
+		</li>
+	</ul>
+</nav>
+
+
+		<footer class="footer-links">
+			<a *ngFor="let link of footerLinks" href="#">{{ link }}</a>
+		</footer>
+	</aside>
+
+	<section class="layout__center">
+		<header class="feed__header">
+			<h1>Feeds</h1>
+			<ul class="feed__tabs" role="tablist">
+				<li *ngFor="let tab of feedTabs">
+					<button
+						type="button"
+						role="tab"
+						[attr.aria-selected]="tab === selectedTab"
+						[class.feed__tab--active]="tab === selectedTab"
+						(click)="selectTab(tab)"
+					>
+						{{ tab }}
+					</button>
+				</li>
+			</ul>
+		</header>
+
+		<app-post-composer (submitPost)="handlePost($event)"></app-post-composer>
+
+		<section class="feed__status" *ngIf="isLoadingFeed">
+			<p>Carregando publicações...</p>
+		</section>
+
+		<section
+			class="feed__status feed__status--error"
+			*ngIf="feedError && !isLoadingFeed"
+		>
+			<p>{{ feedError }}</p>
+			<button type="button" class="feed__retry" (click)="reloadFeed()">
+				Tentar novamente
+			</button>
+		</section>
+
+		<section
+			class="feed__status"
+			*ngIf="!isLoadingFeed && !feedError && posts.length === 0"
+		>
+			<p>Nenhuma publicação por aqui ainda. Compartilhe algo!</p>
+		</section>
+
+		<article
+			class="card feed-card"
+			*ngFor="let post of posts; trackBy: trackPostById"
+		>
+			<header class="feed-card__header">
+				<div class="feed-card__avatar">
+					<img
+						[src]="post.author?.imgURL || 'https://www.gravatar.com/avatar/?d=mp&s=80'"
+						[alt]="post.author?.name ? 'Avatar de ' + post.author?.name : 'Avatar do usuário'"
+						loading="lazy"
+					/>
+				</div>
+				<div class="feed-card__meta">
+					<h3>{{ post.author?.name || 'Usuário da EsporTz' }}</h3>
+					<p *ngIf="post.author?.email">{{ post.author?.email }}</p>
+				</div>
+				<span class="feed-card__time">{{ post.createdAt | date: 'short' }}</span>
+			</header>
+
+			<p class="feed-card__text">{{ post.content }}</p>
+
+			<!-- Workout Activities -->
+			<div class="workout-activities" *ngIf="post.workoutActivities && post.workoutActivities.length > 0">
+				<app-workout-stats-card
+					*ngFor="let workout of post.workoutActivities"
+					[workout]="workout"
+				></app-workout-stats-card>
+			</div>
+
+			<footer class="feed-card__footer">
+				<div class="feed-card__stats">
+					<span><span aria-hidden="true">👍</span> {{ post.likes.length }}</span>
+					<span><span aria-hidden="true">💬</span> {{ post.comments.length }}</span>
+					<span><span aria-hidden="true">🔁</span> {{ post.repostedByIds.length }}</span>
+				</div>
+				<div class="feed-card__actions">
+					<button
+						type="button"
+						class="feed-card__action-btn feed-card__action-btn--like"
+						(click)="handleLike(post.id)"
+						[disabled]="likePending[post.id]"
+					>
+						<span aria-hidden="true">👍</span>
+						Curtir
+					</button>
+					<button
+						type="button"
+						class="feed-card__action-btn feed-card__action-btn--repost"
+						(click)="handleRepost(post.id)"
+						[disabled]="repostPending[post.id]"
+					>
+						<span aria-hidden="true">🔁</span>
+						Republicar
+					</button>
+				</div>
+			</footer>
+
+			<section class="feed-card__comments">
+				<div class="comment-form">
+					<img
+						class="comment-form__avatar"
+						[src]="currentUser?.imgURL || 'https://www.gravatar.com/avatar/?d=mp&s=60'"
+						[alt]="currentUser?.name || 'Avatar do usuário'"
+					/>
+					<div class="comment-form__composer">
+						<textarea
+							rows="2"
+							placeholder="Escreva um comentário..."
+							[(ngModel)]="commentDrafts[post.id]"
+							[ngModelOptions]="{ standalone: true }"
+						></textarea>
+						<div class="comment-form__actions">
+							<button
+								type="button"
+								class="comment-form__submit"
+								(click)="handleComment(post.id)"
+								[disabled]="commentPending[post.id]"
+							>
+								Responder
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<ul class="comment-thread" *ngIf="post.comments.length">
+					<ng-container *ngFor="let comment of post.comments">
+						<ng-container
+							*ngTemplateOutlet="commentTemplate; context: { $implicit: comment, depth: 0 }"
+						></ng-container>
+					</ng-container>
+				</ul>
+			</section>
+		</article>
+	</section>
+
+	<aside class="layout__panel layout__panel--right">
+
+		<section class="card suggestions">
+			<header class="card__header">
+				<h2>Sugestões</h2>
+				<a href="#">Ver todos</a>
+			</header>
+			<ul class="suggestions__list" *ngIf="suggestions.length; else noSuggestions">
+				<li *ngFor="let person of suggestions">
+					<article class="suggestion">
+						<img
+							[src]="person.imgURL || 'https://www.gravatar.com/avatar/?d=mp&s=80'"
+							[alt]="'Avatar de ' + person.name"
+							loading="lazy"
+						/>
+						<div class="suggestion__info">
+							<h3>{{ person.name }}</h3>
+							<p>{{ person.email }}</p>
+						</div>
+						<button
+							type="button"
+							(click)="handleFollow(person)"
+							[disabled]="isFollowing(person) || followPending[person.id]"
+						>
+							{{ isFollowing(person) ? 'Seguindo' : 'Seguir' }}
+						</button>
+					</article>
+				</li>
+			</ul>
+			<ng-template #noSuggestions>
+				<p class="suggestions__empty">Ainda não há sugestões para você.</p>
+			</ng-template>
+		</section>
+
+		<section class="card recommendations">
+			<header class="card__header">
+				<h2>Recomendações</h2>
+			</header>
+			<ul class="recommendations__grid">
+				<li *ngFor="let item of recommendations">
+					<div class="recommendation" [style.background]="item.color">
+						<span aria-hidden="true">{{ item.icon }}</span>
+						<p>{{ item.title }}</p>
+					</div>
+				</li>
+			</ul>
+		</section>
+	</aside>
+</main>
+
+<ng-template #commentTemplate let-comment let-depth="depth">
+	<li
+		class="comment-thread__item"
+		[class.comment-thread__item--child]="depth > 0"
+		[style.--thread-depth]="depth"
+	>
+		<div class="comment-thread__shell">
+			<img
+				class="comment-thread__avatar"
+				[src]="comment.author?.imgURL || 'https://www.gravatar.com/avatar/?d=mp&s=60'"
+				[alt]="comment.author?.name || 'Avatar do usuário'"
+			/>
+			<div class="comment-thread__body">
+				<header class="comment-thread__meta">
+					<strong>{{ comment.author?.name || 'Usuário' }}</strong>
+					<time>{{ comment.createdAt | date: 'short' }}</time>
+				</header>
+				<p class="comment-thread__text">{{ comment.content }}</p>
+				<footer class="comment-thread__toolbar">
+					<button
+						type="button"
+						class="comment-thread__reply-link"
+						(click)="toggleReplyComposer(comment.id)"
+					>
+						Responder
+					</button>
+				</footer>
+				<div
+					class="comment-thread__composer"
+					*ngIf="replyComposerOpen[comment.id]"
+				>
+					<textarea
+						rows="2"
+						placeholder="Responda a {{ comment.author?.name || 'este comentário' }}"
+						[(ngModel)]="commentDrafts[comment.id]"
+						[ngModelOptions]="{ standalone: true }"
+					></textarea>
+					<div class="comment-thread__composer-actions">
+						<button
+							type="button"
+							class="comment-thread__submit"
+							(click)="handleComment(comment.id)"
+							[disabled]="commentPending[comment.id]"
+						>
+							Enviar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<ul class="comment-thread comment-thread--child" *ngIf="comment.comments.length">
+			<ng-container *ngFor="let reply of comment.comments">
+				<ng-container
+					*ngTemplateOutlet="commentTemplate; context: { $implicit: reply, depth: depth + 1 }"
+				></ng-container>
+			</ng-container>
+		</ul>
+	</li>
+</ng-template>

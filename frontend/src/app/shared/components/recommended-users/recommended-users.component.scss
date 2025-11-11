@@ -1,0 +1,192 @@
+.recommended-users-section {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border-light);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border-light);
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-text-primary);
+  }
+
+  mat-icon {
+    color: var(--color-primary);
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+
+  p {
+    margin: var(--spacing-sm) 0;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+  }
+}
+
+.users-list {
+  .user-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border-light);
+    transition: background 0.2s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: var(--color-bg-hover);
+    }
+
+    .user-link {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--spacing-md);
+      flex: 1;
+      text-decoration: none;
+      color: inherit;
+      min-width: 0;
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: var(--radius-full);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .user-info {
+        flex: 1;
+        min-width: 0;
+
+        .user-name {
+          font-weight: 700;
+          color: var(--color-text-primary);
+          font-size: 15px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .user-username {
+          font-size: 14px;
+          color: var(--color-text-secondary);
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .shared-hashtags {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          margin-bottom: var(--spacing-xs);
+          font-size: 13px;
+          color: var(--color-primary);
+
+          .hashtag-icon {
+            font-size: 14px;
+            width: 14px;
+            height: 14px;
+          }
+
+          .hashtags-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .reasons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--spacing-xs);
+
+          .reason-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid var(--color-border-light);
+          }
+        }
+      }
+    }
+
+    .follow-button {
+      flex-shrink: 0;
+      padding: 6px 16px;
+      background: var(--color-text-primary);
+      color: var(--color-bg-primary);
+      border: none;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--color-text-secondary);
+      }
+
+      &.following {
+        background: transparent;
+        color: var(--color-text-primary);
+        border: 1px solid var(--color-border-medium);
+
+        &:hover {
+          background: rgba(244, 33, 46, 0.1);
+          color: #f4212e;
+          border-color: rgba(244, 33, 46, 0.4);
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    text-align: center;
+
+    mat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+      color: var(--color-text-secondary);
+      opacity: 0.5;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+    }
+  }
+}
