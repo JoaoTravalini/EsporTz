@@ -44,7 +44,8 @@ export class NotificationService {
   public unreadCount$ = this.unreadCountSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    this.startPolling();
+    // Delay polling start to ensure auth token is loaded from localStorage
+    setTimeout(() => this.startPolling(), 10000);
   }
 
   private startPolling() {
@@ -64,6 +65,10 @@ export class NotificationService {
         }
       }),
       catchError(error => {
+        // Se for erro de autenticação, apenas retorna resposta vazia sem logar erro
+        if (error.status === 401) {
+          return of({ notifications: [], unreadCount: 0, pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } });
+        }
         console.error('Error fetching notifications', error);
         return of({ notifications: [], unreadCount: 0, pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } });
       })

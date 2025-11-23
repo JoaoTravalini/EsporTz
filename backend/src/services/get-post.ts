@@ -18,7 +18,9 @@ const defaultPostRelations = [
     "repostedBy",
     "workoutActivity",
     "workoutActivities",
-    "hashtags"
+    "hashtags",
+    "mentions",
+    "mentions.mentionedUser"
 ];
 
 export const getPost = async ({ id, relations }: GetPostParams): Promise<Post | undefined> => {

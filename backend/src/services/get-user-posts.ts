@@ -16,7 +16,9 @@ const defaultRelations = [
     "repostedBy",
     "workoutActivity",
     "workoutActivities",
-    "hashtags"
+    "hashtags",
+    "mentions",
+    "mentions.mentionedUser"
 ];
 
 type GetUserPostsParams = {

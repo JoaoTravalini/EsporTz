@@ -1,10 +1,12 @@
 import { Component, OnInit,AfterViewInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { PostsService } from '../../core/services/posts.service';
 import { UsersService } from '../../core/services/users.service';
 import { PublicPost, PublicUser } from '../../core/models/post.model';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 import { User } from '../../core/models';
 
 @Component({
@@ -13,13 +15,14 @@ import { User } from '../../core/models';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  readonly navigationItems = [
-    { label: 'News Feed', icon: 'newspaper', badge: 0, active: true },
-    { label: 'Mensagens', icon: 'message', badge: 6 },
-    { label: 'Fóruns', icon: 'forum', badge: 3 },
-    { label: 'Amigos', icon: 'people', badge: 0 },
-    { label: 'Mídia', icon: 'video', badge: 0 },
-    { label: 'Configurações', icon: 'settings', badge: 0 }
+  navigationItems = [
+    { label: 'News Feed', icon: 'newspaper', badge: 0, active: true, action: null },
+    { label: 'Notificações', icon: 'notifications', badge: 0, active: false, action: 'navigateToNotifications' },
+    { label: 'Mensagens', icon: 'message', badge: 6, active: false, action: null },
+    { label: 'Fóruns', icon: 'forum', badge: 3, active: false, action: null },
+    { label: 'Amigos', icon: 'people', badge: 0, active: false, action: null },
+    { label: 'Mídia', icon: 'video', badge: 0, active: false, action: null },
+    { label: 'Configurações', icon: 'settings', badge: 0, active: false, action: null }
   ];
 
   readonly feedTabs = ['Recentes', 'Amigos', 'Popular'];
@@ -58,25 +61,37 @@ export class HomeComponent implements OnInit {
   commentDrafts: Record<string, string> = {};
   replyComposerOpen: Record<string, boolean> = {};
   readonly followedUserIds = new Set<string>();
+  notificationCount = 0;
 
   constructor(
     private readonly postsService: PostsService,
     private readonly usersService: UsersService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    private readonly notificationService: NotificationService,
+    private readonly router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadFeed();
     this.loadSuggestions();
+    
+
   }
 ngAfterViewInit() {
     this.usersService.getUserProfile(this.currentUser?.id as string).subscribe({
       next: (user) => {
         this.user = user;
+        console.log(this.user)
+        this.notificationService.unreadCount$.subscribe(count => {
+      this.notificationCount = count;
+      const notificationItem = this.navigationItems.find(item => item.icon === 'notifications');
+      if (notificationItem) {
+        notificationItem.badge = count;
+      }
+    });
   },
   error:(err)=>console.log(err)
 })
-
 }
   get currentUser() {
     return this.user?this.user:this.authService.currentUser
@@ -247,6 +262,16 @@ ngAfterViewInit() {
 
   isFollowing(user: PublicUser): boolean {
     return this.followedUserIds.has(user.id);
+  }
+
+  handleMenuItemClick(item: any): void {
+    if (item.action === 'navigateToNotifications') {
+      this.navigateToNotifications();
+    }
+  }
+
+  navigateToNotifications(): void {
+    this.router.navigate(['/notifications']);
   }
 
   private loadFeed(): void {

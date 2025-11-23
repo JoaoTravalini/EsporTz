@@ -1,7 +1,7 @@
 <nav class="navbar">
 	<div class="navbar__brand">
 		<span class="brand__icon" aria-hidden="true"></span>
-		<span class="brand__text">sport<span class="brand__accent">z</span></span>
+		<span class="brand__text">EsporT<span class="brand__accent">z</span></span>
 	</div>
 
 	<ul class="navbar__links">
@@ -17,22 +17,12 @@
 
 	<div class="navbar__actions" *ngIf="currentUser$ | async as user; else authButtons">
 		<div class="user-menu" (clickOutside)="closeUserMenu()">
-			<button
-				type="button"
-				class="user-menu__trigger"
-				(click)="toggleUserMenu()"
-				[attr.aria-expanded]="isUserMenuOpen"
-				aria-haspopup="true"
-			>
+			<button type="button" class="user-menu__trigger" (click)="toggleUserMenu()"
+				[attr.aria-expanded]="isUserMenuOpen" aria-haspopup="true">
 				<div class="user-avatar" *ngIf="!user.imgURL">
 					{{ userInitials }}
 				</div>
-				<img
-					*ngIf="user.imgURL"
-					[src]="user.imgURL"
-					[alt]="user.name"
-					class="user-avatar user-avatar--image"
-				/>
+				<img *ngIf="user.imgURL" [src]="user.imgURL" [alt]="user.name" class="user-avatar user-avatar--image" />
 			</button>
 
 			<div class="user-menu__dropdown" *ngIf="isUserMenuOpen">
@@ -40,12 +30,8 @@
 					<div class="user-avatar user-avatar--small" *ngIf="!user.imgURL">
 						{{ userInitials }}
 					</div>
-					<img
-						*ngIf="user.imgURL"
-						[src]="user.imgURL"
-						[alt]="user.name"
-						class="user-avatar user-avatar--small user-avatar--image"
-					/>
+					<img *ngIf="user.imgURL" [src]="user.imgURL" [alt]="user.name"
+						class="user-avatar user-avatar--small user-avatar--image" />
 					<div class="user-menu__info">
 						<div class="user-menu__name">{{ user.name }}</div>
 						<div class="user-menu__email">{{ user.email }}</div>

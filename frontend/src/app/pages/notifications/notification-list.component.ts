@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy,AfterViewInit } from '@angular/core';
 import { NotificationService, Notification } from '../../core/services/notification.service';
 import { Subscription } from 'rxjs';
 
@@ -7,14 +7,14 @@ import { Subscription } from 'rxjs';
   templateUrl: './notification-list.component.html',
   styleUrls: ['./notification-list.component.scss']
 })
-export class NotificationListComponent implements OnInit, OnDestroy {
+export class NotificationListComponent implements  OnDestroy {
   notifications: Notification[] = [];
   unreadCount: number = 0;
   private subscription: Subscription = new Subscription();
 
   constructor(private notificationService: NotificationService) {}
 
-  ngOnInit(): void {
+  AfterViewInit(): void {
     this.subscription.add(
       this.notificationService.notifications$.subscribe(notifications => {
         this.notifications = notifications;

@@ -11,6 +11,12 @@ export type PublicLike = {
   user?: AuthUser;
 };
 
+export type PublicMention = {
+  id: string;
+  username: string;
+  userId: string;
+};
+
 export type PublicPost = {
   id: string;
   content: string;
@@ -27,6 +33,7 @@ export type PublicPost = {
     title: string;
     thumbnailUrl?: string;
   }>;
+  mentions?: PublicMention[];
 };
 
 export type FeedResponse = {

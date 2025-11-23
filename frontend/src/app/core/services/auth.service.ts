@@ -77,7 +77,9 @@ export class AuthService {
     }
     try {
       const raw = localStorage.getItem(this.storageKey);
-      return raw ? (JSON.parse(raw) as AuthState) : null;
+      const state = raw ? (JSON.parse(raw) as AuthState) : null;
+      console.log('[AuthService] Restored from storage:', !!state, 'Token exists:', !!state?.token);
+      return state;
     } catch (error) {
       console.warn('Failed to restore auth state from storage', error);
       return null;

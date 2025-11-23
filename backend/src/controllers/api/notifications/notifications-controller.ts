@@ -1,21 +1,45 @@
-import { Router } from "express";
+import { Router, type Request } from "express";
 import type { Router as ExpressRouter } from "express";
 import { AppDataSource } from "../../../database/postgres/data-source.js";
 import { Notification } from "../../../database/postgres/entities/notification-entity.js";
 import { asyncHandler } from "../utils/async-handler.js";
+import { verifyJwtToken } from "../../../services/jwt-service.js";
+import { getUser } from "../../../services/get-user.js";
+
+interface AuthenticatedRequest extends Request {
+    user?: any;
+}
 
 const router: ExpressRouter = Router();
 const notificationRepository = AppDataSource.getRepository(Notification);
 
+// Middleware para autenticação em todas as rotas de notificações
+router.use(asyncHandler(async (req: AuthenticatedRequest, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+        return res.status(401).json({ message: "Missing or invalid authorization header" });
+    }
+
+    const token = authHeader.substring(7);
+    const payload = verifyJwtToken(token);
+    if (!payload?.sub) {
+        return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    const user = await getUser({ id: payload.sub });
+    if (!user) {
+        return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+}));
+
 // Get notifications for the authenticated user
 router.get(
     "/",
-    asyncHandler(async (req, res) => {
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
+    asyncHandler(async (req: AuthenticatedRequest, res) => {
+        const userId = req.user!.id;
 
         const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
         const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
@@ -64,13 +88,9 @@ router.get(
 // Mark a notification as read
 router.patch(
     "/:id/read",
-    asyncHandler(async (req, res) => {
-        const userId = req.user?.id;
+    asyncHandler(async (req: AuthenticatedRequest, res) => {
+        const userId = req.user!.id;
         const { id } = req.params;
-
-        if (!userId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
 
         const notification = await notificationRepository.findOne({
             where: { id, recipientId: userId }
@@ -90,12 +110,8 @@ router.patch(
 // Mark all notifications as read
 router.patch(
     "/read-all",
-    asyncHandler(async (req, res) => {
-        const userId = req.user?.id;
-
-        if (!userId) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
+    asyncHandler(async (req: AuthenticatedRequest, res) => {
+        const userId = req.user!.id;
 
         await notificationRepository.update(
             { recipientId: userId, read: false },

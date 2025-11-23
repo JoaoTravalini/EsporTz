@@ -97,9 +97,16 @@ export type PublicPost = {
     workoutActivity?: PublicWorkoutActivity;
     workoutActivities?: PublicWorkoutActivity[];
     hashtags?: PublicHashtag[];
+    mentions?: PublicMention[];
 };
 
 export type PublicHashtag = Pick<Hashtag, "id" | "tag" | "displayTag">;
+
+export type PublicMention = {
+    id: string;
+    username: string;
+    userId: string;
+};
 
 const toIsoString = (value: Date | string | undefined | null): string => {
     if (!value) {
@@ -250,6 +257,14 @@ export const toPublicPost = (post: Post): PublicPost => {
             id: hashtag.id,
             tag: hashtag.tag,
             displayTag: hashtag.displayTag
+        }));
+    }
+
+    if (post.mentions && post.mentions.length > 0) {
+        publicPost.mentions = post.mentions.map(mention => ({
+            id: mention.id,
+            username: mention.mentionedUser.email.split('@')[0] || 'user',
+            userId: mention.mentionedUser.id
         }));
     }
 
