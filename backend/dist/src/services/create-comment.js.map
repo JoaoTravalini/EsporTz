@@ -1,0 +1,1 @@
+{"version":3,"file":"create-comment.js","sourceRoot":"","sources":["../../../src/services/create-comment.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,kBAAkB,CAAC;AAS9C,MAAM,CAAC,MAAM,aAAa,GAAG,KAAK,EAAE,EACnC,QAAQ,EACR,YAAY,EACZ,OAAO,EACc,EAA6B,EAAE;IACpD,OAAO,UAAU,CAAC;QACjB,QAAQ;QACR,OAAO;QACP,QAAQ,EAAE,YAAY;KACtB,CAAC,CAAC;AACJ,CAAC,CAAC"}

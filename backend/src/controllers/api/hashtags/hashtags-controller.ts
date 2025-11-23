@@ -81,9 +81,9 @@ router.get(
         const limit = Math.min(parseInt(req.query.limit as string) || 10, 50);
 
         // Valida time window
-        if (!['1h', '24h', '7d'].includes(timeWindow)) {
+        if (!['1h', '24h', '7d', '30d'].includes(timeWindow)) {
             return res.status(400).json({ 
-                message: "Invalid time window. Must be one of: 1h, 24h, 7d" 
+                message: "Invalid time window. Must be one of: 1h, 24h, 7d, 30d" 
             });
         }
 

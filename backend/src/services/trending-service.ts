@@ -19,7 +19,7 @@ const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutos
  * Retorna hashtags em alta
  */
 export async function getTrendingHashtags(
-    timeWindow: '1h' | '24h' | '7d' = '24h',
+    timeWindow: '1h' | '24h' | '7d' | '30d' = '24h',
     limit: number = 10
 ): Promise<TrendingHashtag[]> {
     // Verifica se tem cache válido
@@ -57,14 +57,15 @@ export async function getTrendingHashtags(
  * Calcula trending hashtags do Neo4j
  */
 async function calculateTrending(
-    timeWindow: '1h' | '24h' | '7d',
+    timeWindow: '1h' | '24h' | '7d' | '30d',
     limit: number
 ): Promise<TrendingHashtag[]> {
     // Converte time window para duration do Neo4j
     const durationMap = {
         '1h': 'PT1H',
         '24h': 'P1D',
-        '7d': 'P7D'
+        '7d': 'P7D',
+        '30d': 'P30D'
     };
     const duration = durationMap[timeWindow];
 
@@ -72,7 +73,8 @@ async function calculateTrending(
     const previousDurationMap = {
         '1h': 'PT2H',
         '24h': 'P2D',
-        '7d': 'P14D'
+        '7d': 'P14D',
+        '30d': 'P60D'
     };
     const previousDuration = previousDurationMap[timeWindow];
 
@@ -133,7 +135,7 @@ export async function updateTrendingCache(): Promise<void> {
 
     try {
         // Atualiza cache para todas as janelas de tempo
-        const timeWindows: Array<'1h' | '24h' | '7d'> = ['1h', '24h', '7d'];
+        const timeWindows: Array<'1h' | '24h' | '7d' | '30d'> = ['1h', '24h', '7d', '30d'];
         const limits = [10, 20];
 
         for (const timeWindow of timeWindows) {

@@ -8,6 +8,8 @@ import { StatisticsComponent } from './pages/statistics/statistics.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AuthStravaCallbackComponent } from './pages/auth-strava-callback/auth-strava-callback.component';
 import { HashtagComponent } from './pages/hashtag/hashtag.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { NotificationListComponent } from './pages/notifications/notification-list.component';
 
 const routes: Routes = [
   {
@@ -31,8 +33,16 @@ const routes: Routes = [
     component: ProfileComponent
   },
   {
+    path: 'settings/profile',
+    component: SettingsComponent
+  },
+  {
     path: 'hashtags/:tag',
     component: HashtagComponent
+  },
+  {
+    path: 'notifications',
+    component: NotificationListComponent
   },
   {
     path: 'login',

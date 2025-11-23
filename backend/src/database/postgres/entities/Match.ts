@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, OneToMany, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { User } from './user-entity.js';
 import { Sport } from './Sport.js';
 import { Team } from './Team.js';
@@ -14,10 +14,10 @@ export class Match {
   title!: string;
 
   @ManyToOne(() => Team)
-  homeTeam!: Team;
+  homeTeam!: Relation<Team>;
 
   @ManyToOne(() => Team)
-  awayTeam!: Team;
+  awayTeam!: Relation<Team>;
 
   @Column('int')
   homeScore!: number;
@@ -78,16 +78,16 @@ export class Match {
   };
 
   @ManyToOne(() => Sport, (sport: Sport) => sport.matches)
-  sport!: Sport;
+  sport!: Relation<Sport>;
 
   @ManyToMany(() => User, (user: User) => user.followedMatches)
-  followers!: User[];
+  followers!: Relation<User>[];
 
   @OneToMany(() => TacticalAnalysis, (analysis: TacticalAnalysis) => analysis.match)
-  tacticalAnalyses!: TacticalAnalysis[];
+  tacticalAnalyses!: Relation<TacticalAnalysis>[];
 
   @OneToMany(() => MatchEvent, (event: MatchEvent) => event.match)
-  events!: MatchEvent[];
+  events!: Relation<MatchEvent>[];
 
   @Column({ type: 'varchar', default: 'scheduled' })
   status!: 'scheduled' | 'live' | 'finished' | 'postponed' | 'cancelled';

@@ -51,6 +51,7 @@
   flex-direction: column;
   gap: 12px;
   min-width: 0;
+  position: relative;
 }
 
 .composer__prompt,
@@ -93,6 +94,66 @@
   &::placeholder {
     color: var(--color-text-secondary);
   }
+}
+
+.mention-suggestions {
+  position: absolute;
+  min-width: 220px;
+  max-width: min(320px, calc(100% - 32px));
+  background: rgba(10, 14, 23, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 25;
+  pointer-events: auto;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.mention-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s ease, transform 0.15s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+    outline: none;
+  }
+}
+
+.mention-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.mention-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.mention-name {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.mention-username {
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 
@@ -142,7 +203,8 @@
 }
 
 .composer__actions .action {
-  flex: 0 0 auto; /* evitar que as actions cresçam além do necessário */
+  flex: 0 0 auto;
+  /* evitar que as actions cresçam além do necessário */
 }
 
 .action {
@@ -215,16 +277,41 @@
   padding: 16px;
   border-top: 1px solid var(--color-border-light);
   position: relative;
-  z-index: 8; /* garantir que os controles fiquem acima de outros elementos */
+  z-index: 8;
+  /* garantir que os controles fiquem acima de outros elementos */
 }
 
-.composer__action-panel {
-  padding: 12px 16px 16px 68px;
+.mention-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.08);
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  background: var(--color-bg-subtle);
-  border-top: 1px solid var(--color-border-light);
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.mention-avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mention-avatar--initials {
+  background: linear-gradient(135deg, rgba(29, 155, 240, 0.25), rgba(15, 96, 196, 0.4));
+  border-color: rgba(29, 155, 240, 0.4);
+}
+
+.mention-avatar__initials {
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.mention-info {
   border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -585,7 +672,7 @@
     color: var(--item-accent);
   }
 
-  > div {
+  >div {
     display: flex;
     flex-direction: column;
     gap: 3px;

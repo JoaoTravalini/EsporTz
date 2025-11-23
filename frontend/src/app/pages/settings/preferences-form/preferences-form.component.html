@@ -1,0 +1,74 @@
+<form [formGroup]="preferencesForm" (ngSubmit)="onSubmit()" class="preferences-form">
+  <div class="form-section">
+    <h2>Esportes Favoritos</h2>
+    <p class="section-description">Selecione seus esportes favoritos para personalizar seu feed</p>
+    
+    <div class="sports-chips">
+      <div
+        *ngFor="let sport of availableSports"
+        class="sport-chip"
+        [class.selected]="isSportSelected(sport)"
+        (click)="toggleSport(sport)">
+        {{ sport }}
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section" formGroupName="notifications">
+    <h2>Notificações</h2>
+    <p class="section-description">Escolha quais notificações você deseja receber</p>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>highlight</mat-icon>
+        <div>
+          <h3>Highlights</h3>
+          <p>Receba notificações sobre novos highlights</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="highlights"></mat-slide-toggle>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>analytics</mat-icon>
+        <div>
+          <h3>Análises Táticas</h3>
+          <p>Receba notificações sobre novas análises táticas</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="analyses"></mat-slide-toggle>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>sports_soccer</mat-icon>
+        <div>
+          <h3>Partidas</h3>
+          <p>Receba notificações sobre partidas ao vivo</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="matches"></mat-slide-toggle>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>favorite</mat-icon>
+        <div>
+          <h3>Times Seguidos</h3>
+          <p>Receba notificações sobre seus times favoritos</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="followedTeams"></mat-slide-toggle>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+    <button mat-raised-button color="primary" type="submit">
+      Salvar Preferências
+    </button>
+  </div>
+</form>

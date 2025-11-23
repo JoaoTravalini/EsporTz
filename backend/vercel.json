@@ -1,0 +1,17 @@
+{
+	"version": 2,
+	"installCommand": "pnpm install --frozen-lockfile",
+	"buildCommand": "pnpm run build",
+	"builds": [
+		{
+			"src": "dist/src/vercel-handler.js",
+			"use": "@vercel/node"
+		}
+	],
+	"routes": [
+		{
+			"src": "/(.*)",
+			"dest": "dist/src/vercel-handler.js"
+		}
+	]
+}

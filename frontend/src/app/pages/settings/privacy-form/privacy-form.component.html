@@ -1,0 +1,48 @@
+<form [formGroup]="privacyForm" (ngSubmit)="onSubmit()" class="privacy-form">
+  <div class="form-section" formGroupName="privacy">
+    <h2>Configurações de Privacidade</h2>
+    <p class="section-description">Controle quem pode ver suas informações e conteúdo</p>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>public</mat-icon>
+        <div>
+          <h3>Perfil Público</h3>
+          <p>Quando desativado, apenas seus seguidores podem ver seu perfil</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="profilePublic"></mat-slide-toggle>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>bar_chart</mat-icon>
+        <div>
+          <h3>Mostrar Estatísticas</h3>
+          <p>Exibir suas estatísticas de atividade para outros usuários</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="showStats"></mat-slide-toggle>
+    </div>
+
+    <div class="toggle-item">
+      <div class="toggle-info">
+        <mat-icon>share</mat-icon>
+        <div>
+          <h3>Permitir Compartilhamento de Análises</h3>
+          <p>Outros usuários podem compartilhar suas análises táticas</p>
+        </div>
+      </div>
+      <mat-slide-toggle formControlName="allowAnalysisSharing"></mat-slide-toggle>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button mat-button type="button" (click)="onCancel()">
+      Cancelar
+    </button>
+    <button mat-raised-button color="primary" type="submit">
+      Salvar Configurações
+    </button>
+  </div>
+</form>

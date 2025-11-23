@@ -1,13 +1,13 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
+  apiUrl: 'https://backend-rust-seven-42.vercel.app/api',
   cloudinary: {
     cloudName: 'your-cloud-name',
     apiKey: 'your-api-key'
   },
   strava: {
     clientId: '181714',
-    redirectUri: 'http://localhost:4200/auth/strava/callback',
+    redirectUri: 'https://backend-rust-seven-42.vercel.app/api/auth/callback',
     scope: 'read,activity:read_all,profile:read_all'
   }
 } as const;

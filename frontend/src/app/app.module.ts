@@ -14,6 +14,8 @@ import { AuthComponent } from './pages/auth/auth.component';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { ClickOutsideDirective } from './global/directives/click-outside.directive';
 import { WorkoutStatsCardComponent } from './shared/components/workout-stats-card/workout-stats-card.component';
+import { NotificationListComponent } from './pages/notifications/notification-list.component';
+import { MentionPipe } from './shared/pipes/mention.pipe';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { WorkoutStatsCardComponent } from './shared/components/workout-stats-car
     NavbarComponent,
     PostComposerComponent,
     AuthComponent,
-    ClickOutsideDirective
+    ClickOutsideDirective,
+    NotificationListComponent,
+    MentionPipe
   ],
   imports: [
     BrowserModule,

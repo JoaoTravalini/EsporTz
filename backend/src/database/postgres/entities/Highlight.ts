@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, CreateDateColumn, UpdateDateColumn, OneToMany, type Relation } from 'typeorm';
 import { User } from './user-entity.js';
 import { Post } from './post-entity.js';
 import { Sport } from './Sport.js';
@@ -43,21 +43,21 @@ export class Highlight {
   likes!: number;
 
   @ManyToOne(() => User, (user: User) => user.highlights)
-  author!: User;
+  author!: Relation<User>;
 
   @ManyToOne(() => Sport, (sport: Sport) => sport.highlights)
-  sport!: Sport;
+  sport!: Relation<Sport>;
 
   @ManyToMany(() => User, { cascade: true })
   @JoinTable()
-  likedBy!: User[];
+  likedBy!: Relation<User>[];
 
   @OneToMany(() => TacticalAnalysis, (analysis: TacticalAnalysis) => analysis.highlight)
-  tacticalAnalyses!: TacticalAnalysis[];
+  tacticalAnalyses!: Relation<TacticalAnalysis>[];
 
   @ManyToMany(() => Post, (post: Post) => post.relatedHighlights)
   @JoinTable()
-  relatedPosts!: Post[];
+  relatedPosts!: Relation<Post>[];
 
   @Column('json', { nullable: true })
   metadata!: {

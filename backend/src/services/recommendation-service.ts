@@ -131,7 +131,7 @@ async function getPopularRecentPosts(limit: number): Promise<PostRecommendation[
         .leftJoinAndSelect("comments.author", "commentAuthor")
         .leftJoinAndSelect("post.hashtags", "hashtags")
         .leftJoinAndSelect("post.workoutActivities", "workoutActivities")
-        .where("post.createdAt > :date", { 
+        .where("post.createdAt > :date", {
             date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // últimos 7 dias
         })
         .orderBy("likes.id", "DESC")
@@ -154,6 +154,26 @@ export async function recommendUsers(
     limit: number = 5
 ): Promise<UserRecommendation[]> {
     try {
+        console.log(`🔍 [recommendUsers] Searching recommendations for user ${userId}`);
+
+        // Verifica se o usuário existe no Neo4j e quem ele segue
+        const checkUser = await driver.executeQuery(
+            `MATCH (me:User {id: $userId})
+             OPTIONAL MATCH (me)-[:FOLLOWS]->(following:User)
+             RETURN me.id as userId, count(following) as followingCount, collect(following.id) as followingIds`,
+            { userId }
+        );
+
+        if (checkUser.records.length > 0) {
+            const record = checkUser.records[0];
+            const followingCount = record!.get('followingCount')?.toNumber() || 0;
+            const followingIds = record!.get('followingIds') || [];
+            console.log(`📊 [recommendUsers] User ${userId} follows ${followingCount} users in Neo4j:`, followingIds);
+        } else {
+            console.log(`⚠️ [recommendUsers] User ${userId} not found in Neo4j, using fallback`);
+            return getPopularUsers(userId, limit);
+        }
+
         // Query Neo4j para recomendações de usuários
         const result = await driver.executeQuery(
             `MATCH (me:User {id: $userId})
@@ -194,9 +214,11 @@ export async function recommendUsers(
         );
 
         if (result.records.length === 0) {
-            console.log(`[recommendUsers] No recommendations found for user ${userId}, using fallback`);
+            console.log(`⚠️ [recommendUsers] No recommendations found in Neo4j for user ${userId}, using PostgreSQL fallback`);
             return getPopularUsers(userId, limit);
         }
+
+        console.log(`✅ [recommendUsers] Found ${result.records.length} recommendations from Neo4j for user ${userId}`);
 
         // Extrai IDs dos usuários recomendados
         const recommendations = result.records.map(record => ({
@@ -230,24 +252,40 @@ export async function recommendUsers(
         return userRecommendations;
 
     } catch (error) {
-        console.error("[recommendUsers] Error getting recommendations from Neo4j:", error);
+        console.error("❌ [recommendUsers] Error getting recommendations from Neo4j:", error);
+        console.log("⚠️ [recommendUsers] Using PostgreSQL fallback due to Neo4j error");
         // Fallback: retorna usuários populares
         return getPopularUsers(userId, limit);
     }
 }
 
 /**
- * Fallback: retorna usuários populares
+ * Fallback: retorna usuários populares que o usuário ainda não segue
  */
 async function getPopularUsers(excludeUserId: string, limit: number): Promise<UserRecommendation[]> {
+    // Busca o usuário atual com seus seguidos
+    const currentUser = await userRepository.findOne({
+        where: { id: excludeUserId },
+        relations: ['following']
+    });
+
+    if (!currentUser) {
+        return [];
+    }
+
+    // IDs dos usuários que já segue
+    const followingIds = (currentUser.following || []).map(u => u.id);
+    followingIds.push(excludeUserId); // Adiciona o próprio usuário para excluir
+
+    // Busca usuários que NÃO estão na lista de seguidos
     const users = await userRepository
         .createQueryBuilder("user")
-        .where("user.id != :excludeUserId", { excludeUserId })
+        .where("user.id NOT IN (:...excludeIds)", { excludeIds: followingIds })
         .orderBy("RANDOM()")
-        .take(limit)
+        .take(limit * 2) // Busca mais para ter opções
         .getMany();
 
-    return users.map(user => ({
+    return users.slice(0, limit).map(user => ({
         user,
         score: 0,
         reasons: ['popular']

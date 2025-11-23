@@ -2,6 +2,7 @@ import type { Like } from "../../../database/postgres/entities/like-entity.js";
 import type { Post } from "../../../database/postgres/entities/post-entity.js";
 import type { User } from "../../../database/postgres/entities/user-entity.js";
 import type { WorkoutActivity } from "../../../database/postgres/entities/workout-activity.js";
+import type { Hashtag } from "../../../database/postgres/entities/hashtag-entity.js";
 
 export type PublicUser = {
     id: string;
@@ -95,7 +96,10 @@ export type PublicPost = {
     repostedByIds: string[];
     workoutActivity?: PublicWorkoutActivity;
     workoutActivities?: PublicWorkoutActivity[];
+    hashtags?: PublicHashtag[];
 };
+
+export type PublicHashtag = Pick<Hashtag, "id" | "tag" | "displayTag">;
 
 const toIsoString = (value: Date | string | undefined | null): string => {
     if (!value) {
@@ -239,6 +243,14 @@ export const toPublicPost = (post: Post): PublicPost => {
 
     if (post.workoutActivities && post.workoutActivities.length > 0) {
         publicPost.workoutActivities = post.workoutActivities.map(toPublicWorkoutActivity);
+    }
+
+    if (post.hashtags && post.hashtags.length > 0) {
+        publicPost.hashtags = post.hashtags.map(hashtag => ({
+            id: hashtag.id,
+            tag: hashtag.tag,
+            displayTag: hashtag.displayTag
+        }));
     }
 
     return publicPost;

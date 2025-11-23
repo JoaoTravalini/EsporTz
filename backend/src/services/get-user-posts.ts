@@ -14,7 +14,9 @@ const defaultRelations = [
     "likes",
     "likes.user",
     "repostedBy",
-    "workoutActivities"
+    "workoutActivity",
+    "workoutActivities",
+    "hashtags"
 ];
 
 type GetUserPostsParams = {

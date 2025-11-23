@@ -44,8 +44,9 @@ export const createFollower = async ({
 			 MERGE (f)-[:FOLLOWS]->(t)`,
 			{ followerId, followedId }
 		);
+		console.log(`✅ Neo4j: User ${followerId} now follows ${followedId}`);
 	} catch (error) {
-		console.warn("Failed to mirror follow graph relation", error);
+		console.error("❌ Failed to mirror follow graph relation", error);
 	}
 
 	return true;

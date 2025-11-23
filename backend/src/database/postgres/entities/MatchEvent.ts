@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { Match } from './Match.js';
 import { User } from './user-entity.js';
 
@@ -29,10 +29,10 @@ export class MatchEvent {
   description!: string;
 
   @ManyToOne(() => Match, (match: Match) => match.events)
-  match!: Match;
+  match!: Relation<Match>;
 
   @ManyToOne(() => User, { nullable: true })
-  reportedBy!: User;
+  reportedBy!: Relation<User>;
 
   @Column({ type: 'boolean', default: false })
   isVerified!: boolean;

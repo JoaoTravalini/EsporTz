@@ -1,27 +1,36 @@
 .recommended-section {
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-lg);
+  background: rgba(29, 155, 240, 0.03);
+  border-radius: 16px;
   overflow: hidden;
-  border: 1px solid var(--color-border-light);
-  margin-bottom: var(--spacing-lg);
+  border: 1px solid rgba(29, 155, 240, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(29, 155, 240, 0.1);
+    border-color: rgba(29, 155, 240, 0.2);
+  }
 }
 
 .recommended-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border-light);
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(29, 155, 240, 0.05) 0%, rgba(29, 155, 240, 0.02) 100%);
+  border-bottom: 1px solid rgba(29, 155, 240, 0.1);
 
   h3 {
     margin: 0;
     font-size: 20px;
     font-weight: 800;
-    color: var(--color-text-primary);
+    color: #e7e9ea;
+    letter-spacing: -0.3px;
   }
 
   mat-icon {
-    color: var(--color-secondary);
+    color: #1d9bf0;
     font-size: 24px;
     width: 24px;
     height: 24px;
@@ -46,19 +55,36 @@
 
 .recommendations-list {
   .recommendation-item {
-    border-bottom: 1px solid var(--color-border-light);
+    border-bottom: 1px solid rgba(29, 155, 240, 0.08);
 
     &:last-child {
       border-bottom: none;
     }
 
     .post-card {
-      padding: var(--spacing-lg);
-      transition: background 0.2s ease;
+      padding: 20px 24px;
+      transition: all 0.2s ease;
       cursor: pointer;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, #1d9bf0 0%, #1a8cd8 100%);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
 
       &:hover {
-        background: var(--color-bg-hover);
+        background: rgba(29, 155, 240, 0.05);
+
+        &::before {
+          opacity: 1;
+        }
       }
 
       .post-header {
@@ -103,47 +129,54 @@
       }
 
       .recommendation-reasons {
-        margin-bottom: var(--spacing-md);
+        margin-bottom: 12px;
 
         mat-chip-set {
           display: flex;
           flex-wrap: wrap;
-          gap: var(--spacing-xs);
+          gap: 8px;
         }
 
         .reason-chip {
           display: inline-flex;
           align-items: center;
-          gap: 4px;
-          padding: 4px 12px;
-          background: var(--color-primary-light);
-          color: var(--color-primary);
-          border-radius: var(--radius-full);
+          gap: 6px;
+          padding: 6px 14px;
+          background: linear-gradient(135deg, rgba(29, 155, 240, 0.15) 0%, rgba(29, 155, 240, 0.08) 100%);
+          color: #1d9bf0;
+          border-radius: 20px;
           font-size: 12px;
           font-weight: 600;
-          border: 1px solid var(--color-primary);
+          border: 1px solid rgba(29, 155, 240, 0.3);
+          transition: all 0.2s ease;
 
           .reason-icon {
             font-size: 14px;
             width: 14px;
             height: 14px;
           }
+
+          &:hover {
+            background: linear-gradient(135deg, rgba(29, 155, 240, 0.25) 0%, rgba(29, 155, 240, 0.15) 100%);
+            border-color: rgba(29, 155, 240, 0.5);
+            transform: translateY(-1px);
+          }
         }
       }
 
       .post-actions {
         display: flex;
-        gap: var(--spacing-xl);
+        gap: 24px;
 
         .action-button {
           display: flex;
           align-items: center;
-          gap: var(--spacing-xs);
-          padding: var(--spacing-xs) var(--spacing-sm);
+          gap: 8px;
+          padding: 8px 12px;
           background: transparent;
           border: none;
-          color: var(--color-text-secondary);
-          border-radius: var(--radius-full);
+          color: #71767b;
+          border-radius: 20px;
           cursor: pointer;
           transition: all 0.2s ease;
 
@@ -155,11 +188,12 @@
 
           span {
             font-size: 13px;
+            font-weight: 500;
           }
 
           &:hover {
-            color: var(--color-primary);
-            background: var(--color-primary-light);
+            color: #1d9bf0;
+            background: rgba(29, 155, 240, 0.1);
           }
         }
       }

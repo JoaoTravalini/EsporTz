@@ -1,23 +1,23 @@
 import {
   CdkScrollable,
   ViewportRuler
-} from "./chunk-4W6OEIJE.js";
+} from "./chunk-7DYXJXLV.js";
 import {
   CdkPortal,
   CdkPortalOutlet,
   TemplatePortal
-} from "./chunk-X5ICLF54.js";
-import "./chunk-DWT2XY3U.js";
+} from "./chunk-NJXIAQDC.js";
+import "./chunk-PACEUK3B.js";
 import {
   SharedResizeObserver
-} from "./chunk-KNGXRXKB.js";
+} from "./chunk-N7B42HN5.js";
 import {
   animate,
   state,
   style,
   transition,
   trigger
-} from "./chunk-INLXSH6V.js";
+} from "./chunk-SOTFMXHH.js";
 import {
   CdkMonitorFocus,
   CdkObserveContent,
@@ -32,13 +32,14 @@ import {
   SPACE,
   hasModifierKey,
   normalizePassiveListenerOptions
-} from "./chunk-O5PMQZO6.js";
+} from "./chunk-EC5WURY4.js";
 import {
   DOCUMENT
-} from "./chunk-63X2E2Z2.js";
+} from "./chunk-SJKFNRJ3.js";
 import {
   ANIMATION_MODULE_TYPE,
   Attribute,
+  BehaviorSubject,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -46,6 +47,7 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  EMPTY,
   ElementRef,
   EventEmitter,
   Inject,
@@ -54,19 +56,32 @@ import {
   Input,
   NgModule,
   NgZone,
+  Observable,
   Optional,
   Output,
   QueryList,
+  Subject,
+  Subscription,
   TemplateRef,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation$1,
   afterNextRender,
   booleanAttribute,
+  debounceTime,
+  filter,
   forwardRef,
+  fromEvent,
   inject,
+  merge,
   numberAttribute,
+  of,
   setClassMetadata,
+  skip,
+  startWith,
+  switchMap,
+  takeUntil,
+  timer,
   ɵɵInheritDefinitionFeature,
   ɵɵInputTransformsFeature,
   ɵɵNgOnChangesFeature,
@@ -108,27 +123,8 @@ import {
   ɵɵtext,
   ɵɵtextInterpolate,
   ɵɵviewQuery
-} from "./chunk-HRA3M2TV.js";
-import "./chunk-VLKICHLU.js";
-import {
-  fromEvent,
-  merge
-} from "./chunk-3MVY5ND4.js";
-import {
-  BehaviorSubject,
-  EMPTY,
-  Observable,
-  Subject,
-  Subscription,
-  debounceTime,
-  filter,
-  of,
-  skip,
-  startWith,
-  switchMap,
-  takeUntil,
-  timer
-} from "./chunk-PX3AXT5K.js";
+} from "./chunk-TEFF47H3.js";
+import "./chunk-WDMUDEB6.js";
 
 // node_modules/.pnpm/@angular+material@18.2.14_12e59df0d021be48d2b0536c80b82f43/node_modules/@angular/material/fesm2022/tabs.mjs
 var _c0 = ["*"];

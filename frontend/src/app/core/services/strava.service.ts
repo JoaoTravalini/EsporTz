@@ -61,7 +61,7 @@ export class StravaService {
 
     const clientId = environment.strava?.clientId;
     const redirectUri = this.getRedirectUri();
-
+    console.log(redirectUri)
     if (!clientId || !redirectUri) {
       console.error('Strava client id or redirect URI is not configured.');
       return;

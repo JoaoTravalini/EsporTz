@@ -1,5 +1,5 @@
 import { Router } from "express";
-import multer from 'multer';
+import { upload } from "../../../middlewares/multer-middleware.js";
 import {
     getHighlights,
     getHighlightById,
@@ -13,23 +13,6 @@ import {
 } from "./highlights-controller.js";
 
 const router = Router();
-
-// Configure multer for file uploads
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-        fileSize: 100 * 1024 * 1024, // 100MB limit
-        files: 2 // Max 2 files (video + thumbnail)
-    },
-    fileFilter: (req, file, cb) => {
-        // Allow video and image files
-        if (file.mimetype.startsWith('video/') || file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only video and image files are allowed'));
-        }
-    }
-});
 
 // Public routes
 router.get("/", getHighlights);

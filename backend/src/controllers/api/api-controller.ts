@@ -11,6 +11,8 @@ import statsRouter from "./stats/routes.js";
 import { stravaActivitiesRouter } from "./strava/strava-activities.controller.js";
 import { hashtagsRouter } from "./hashtags/hashtags-controller.js";
 import { recommendationsRouter } from "./recommendations/recommendations-controller.js";
+import { mentionsRouter } from "./mentions/mentions-controller.js";
+import { notificationsRouter } from "./notifications/notifications-controller.js";
 
 const router: ExpressRouter = Router();
 
@@ -25,5 +27,7 @@ router.use("/stats", statsRouter);
 router.use("/strava", stravaActivitiesRouter);
 router.use("/hashtags", hashtagsRouter);
 router.use("/recommendations", recommendationsRouter);
+router.use("/mentions", mentionsRouter);
+router.use("/notifications", notificationsRouter);
 
 export const r = router;

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { User } from './user-entity.js';
 import { Match } from './Match.js';
 
@@ -44,7 +44,7 @@ export class Team {
   }>;
 
   @ManyToMany(() => User, (user: User) => user.favoriteTeams)
-  fans!: User[];
+  fans!: Relation<User>[];
 
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;

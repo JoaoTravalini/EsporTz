@@ -1,0 +1,140 @@
+.preferences-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  color: var(--color-text-primary);
+}
+
+.form-section {
+  h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+
+  .section-description {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+}
+
+.sports-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  .sport-chip {
+    padding: 10px 18px;
+    border: 1px solid rgba(231, 233, 234, 0.16);
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+
+    &:hover {
+      border-color: rgba(29, 155, 240, 0.6);
+      color: var(--color-primary);
+    }
+
+    &.selected {
+      border-color: transparent;
+      background: linear-gradient(135deg, #1d9bf0, #0d7ac4);
+      color: #000;
+      box-shadow: 0 6px 18px rgba(29, 155, 240, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      flex: 1 1 calc(50% - 6px);
+      text-align: center;
+    }
+  }
+}
+
+.toggle-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(231, 233, 234, 0.08);
+  margin-bottom: 12px;
+  background: rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(29, 155, 240, 0.4);
+  }
+
+  .toggle-info {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex: 1;
+
+    mat-icon {
+      color: var(--color-primary);
+      margin-top: 4px;
+    }
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text-primary);
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(231, 233, 234, 0.08);
+
+  @media (max-width: 768px) {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep .preferences-form {
+  .mat-mdc-slide-toggle .mdc-switch__track::after,
+  .mat-mdc-slide-toggle .mdc-switch__track::before {
+    background: rgba(231, 233, 234, 0.2);
+  }
+
+  .mat-mdc-slide-toggle.mat-accent.mdc-switch--selected .mdc-switch__handle::after {
+    background: #000;
+  }
+
+  .mat-mdc-slide-toggle.mat-accent.mdc-switch--selected .mdc-switch__track::after {
+    background: linear-gradient(135deg, #1d9bf0, #0d7ac4);
+  }
+
+  .mat-mdc-raised-button.mat-primary {
+    background: linear-gradient(135deg, #1d9bf0, #0d7ac4);
+    color: #000;
+  }
+}

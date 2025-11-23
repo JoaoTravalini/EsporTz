@@ -5,6 +5,7 @@ import type { Like } from "./like-entity.js";
 import type { Highlight } from "./Highlight.js";
 import type { WorkoutActivity } from "./workout-activity.js";
 import type { Hashtag } from "./hashtag-entity.js";
+import type { Mention } from "./mention-entity.js";
 
 @Entity()
 export class Post extends BaseEntity {
@@ -53,4 +54,8 @@ export class Post extends BaseEntity {
         inverseJoinColumn: { name: "hashtagId", referencedColumnName: "id" }
     })
     hashtags!: Hashtag[];
+
+    // Menções no post
+    @OneToMany("Mention", "post")
+    mentions!: Mention[];
 }

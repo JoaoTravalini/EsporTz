@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { User } from './user-entity.js';
 import { TacticalAnalysis } from './TacticalAnalysis.js';
 
@@ -22,13 +22,13 @@ export class TacticalComment {
   }[];
 
   @ManyToOne(() => User, (user: User) => user.tacticalComments)
-  author!: User;
+  author!: Relation<User>;
 
   @ManyToOne(() => TacticalAnalysis, (analysis: TacticalAnalysis) => analysis.comments)
-  analysis!: TacticalAnalysis;
+  analysis!: Relation<TacticalAnalysis>;
 
   @ManyToOne(() => TacticalComment, { nullable: true })
-  parent: TacticalComment | null = null;
+  parent: Relation<TacticalComment> | null = null;
 
   @Column({ type: 'boolean', default: false })
   isVerified!: boolean;

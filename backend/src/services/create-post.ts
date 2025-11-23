@@ -5,6 +5,7 @@ import { User } from "../database/postgres/entities/user-entity.js";
 import { WorkoutActivity } from "../database/postgres/entities/workout-activity.js";
 import { In } from "typeorm";
 import { extractHashtags, upsertHashtags, syncHashtagsToNeo4j } from "./hashtag-service.js";
+import { processMentions } from "./mention-service.js";
 
 const postRepository = AppDataSource.getRepository(Post);
 const userRepository = AppDataSource.getRepository(User);
@@ -68,6 +69,8 @@ export const createPost = async ({
     });
 
     const savedPost = await postRepository.save(newPost);
+    const postCreatedAtIso = savedPost.createdAt.toISOString();
+    const postUpdatedAtIso = savedPost.updatedAt.toISOString();
     
     console.log('[createPost] Saved post ID:', savedPost.id);
 
@@ -75,8 +78,11 @@ export const createPost = async ({
         await driver.executeQuery(
             `MERGE (u:User {id: $userId})
              MERGE (p:Post {id: $postId})
+             ON CREATE SET p.createdAt = datetime($createdAt), p.authorId = $userId
+             SET p.updatedAt = datetime($updatedAt),
+                 p.authorId = coalesce(p.authorId, $userId)
              MERGE (u)-[:POSTED]->(p)`,
-            { userId: author.id, postId: savedPost.id }
+            { userId: author.id, postId: savedPost.id, createdAt: postCreatedAtIso, updatedAt: postUpdatedAtIso }
         );
 
         if (parent) {
@@ -89,22 +95,8 @@ export const createPost = async ({
         }
 
         // Adicionar relações de atividades no Neo4j (opcional, para consultas futuras)
-        if (workoutActivities.length > 0) {
-            await driver.executeQuery(
-                `UNWIND $activityIds AS activityId
-                 MERGE (p:Post {id: $postId})
-                 MERGE (a:WorkoutActivity {id: activityId})
-                 MERGE (p)-[:CONTAINS_WORKOUT]->(a)`,
-                { postId: savedPost.id, activityIds: workoutActivities.map(a => a.id) }
-            );
-        }
-
-        // Sincroniza hashtags no Neo4j
-        if (hashtags.length > 0) {
-            await syncHashtagsToNeo4j(savedPost.id, hashtags, author.id);
-        }
     } catch (error) {
-        console.warn("Failed to mirror post graph relation", error);
+        console.error("Error syncing to Neo4j:", error);
     }
 
     const savedWithRelations = await postRepository.findOne({

@@ -72,11 +72,36 @@ export class RecommendedUsersComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     
-    // TODO: Implement follow/unfollow logic
     const isFollowing = this.followingMap.get(user.id) || false;
-    this.followingMap.set(user.id, !isFollowing);
     
-    console.log(isFollowing ? 'Unfollow' : 'Follow', user.username);
+    if (isFollowing) {
+      // Unfollow
+      this.recommendationService.unfollowUser(this.userId, user.id).subscribe({
+        next: () => {
+          this.followingMap.set(user.id, false);
+          console.log('Unfollowed', user.username);
+        },
+        error: (err) => {
+          console.error('Error unfollowing user:', err);
+        }
+      });
+    } else {
+      // Follow
+      this.recommendationService.followUser(this.userId, user.id).subscribe({
+        next: () => {
+          this.followingMap.set(user.id, true);
+          console.log('Followed', user.username);
+          
+          // Remove o usuário da lista de recomendações após seguir
+          setTimeout(() => {
+            this.recommendations = this.recommendations.filter(rec => rec.user.id !== user.id);
+          }, 500); // Pequeno delay para feedback visual
+        },
+        error: (err) => {
+          console.error('Error following user:', err);
+        }
+      });
+    }
   }
 
   isFollowing(userId: string): boolean {

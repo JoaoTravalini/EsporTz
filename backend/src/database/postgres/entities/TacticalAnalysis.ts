@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { User } from './user-entity.js';
 import { Sport } from './Sport.js';
 import { Highlight } from './Highlight.js';
@@ -63,23 +63,23 @@ export class TacticalAnalysis {
   isVerified!: boolean;
 
   @ManyToOne(() => User, (user: User) => user.tacticalAnalyses)
-  author!: User;
+  author!: Relation<User>;
 
   @ManyToOne(() => Sport, (sport: Sport) => sport.tacticalAnalyses)
-  sport!: Sport;
+  sport!: Relation<Sport>;
 
   @ManyToOne(() => Highlight, (highlight: Highlight) => highlight.tacticalAnalyses, { nullable: true })
-  highlight: Highlight | null = null;
+  highlight: Relation<Highlight> | null = null;
 
   @ManyToOne(() => Match, (match: Match) => match.tacticalAnalyses, { nullable: true })
-  match: Match | null = null;
+  match: Relation<Match> | null = null;
 
   @ManyToMany(() => User, { cascade: true })
   @JoinTable()
-  likedBy!: User[];
+  likedBy!: Relation<User>[];
 
   @OneToMany(() => TacticalComment, (comment: TacticalComment) => comment.analysis)
-  comments!: TacticalComment[];
+  comments!: Relation<TacticalComment>[];
 
   @Column('int', { default: 0 })
   likes!: number;

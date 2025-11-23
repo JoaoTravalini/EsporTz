@@ -32,7 +32,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   loading = false;
   errorMessage: string | null = null;
 
-  readonly stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=181714&response_type=code&redirect_uri=${encodeURIComponent('http://localhost:3000/api/auth/callback')}&approval_prompt=force&scope=${scopes}`;
+  readonly stravaAuthUrl = `https://www.strava.com/oauth/authorize?client_id=181714&response_type=code&redirect_uri=${encodeURIComponent('https://backend-rust-seven-42.vercel.app/api/auth/callback')}&approval_prompt=force&scope=${scopes}`;
 
   private routeSub?: Subscription;
 

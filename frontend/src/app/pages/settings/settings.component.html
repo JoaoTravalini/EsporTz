@@ -1,0 +1,176 @@
+<div class="settings-page">
+  <ng-container *ngIf="!loading && user; else loadingState">
+    <section class="hero-card">
+      <div class="hero-top">
+        <button mat-icon-button class="back-button" (click)="onCancel()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <p class="eyebrow">Painel da conta</p>
+          <h1>Configurações</h1>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <div class="avatar-wrapper">
+          <ng-container *ngIf="user.imgURL; else initialsAvatar">
+            <img [src]="user.imgURL" [alt]="user.name" loading="lazy" />
+          </ng-container>
+          <ng-template #initialsAvatar>
+            <span>{{ userInitials }}</span>
+          </ng-template>
+        </div>
+
+        <div class="hero-details">
+          <div class="headline">
+            <h2>{{ user.name }}</h2>
+            <span class="email">{{ user.email }}</span>
+          </div>
+          <p class="bio" *ngIf="user.bio; else emptyBio">{{ user.bio }}</p>
+          <ng-template #emptyBio>
+            <p class="bio muted">Compartilhe sua história esportiva com a comunidade.</p>
+          </ng-template>
+
+          <div class="meta-row">
+            <span class="meta-chip">
+              <mat-icon>calendar_today</mat-icon>
+              Desde {{ user.createdAt | date: 'MMM yyyy' }}
+            </span>
+            <span class="meta-chip" *ngIf="user.location">
+              <mat-icon>location_on</mat-icon>
+              {{ user.location }}
+            </span>
+            <span class="meta-chip">{{ accountProviderLabel }}</span>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <button mat-stroked-button color="primary" (click)="onCancel()">
+            <mat-icon>person</mat-icon>
+            Ver perfil
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-card">
+          <p class="label">Highlights</p>
+          <p class="value">{{ user.stats?.highlightsCreated ?? 0 }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Análises</p>
+          <p class="value">{{ user.stats?.analysesCreated ?? 0 }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Seguidores</p>
+          <p class="value">{{ user.followers?.length ?? 0 }}</p>
+        </div>
+        <div class="stat-card">
+          <p class="label">Favorito</p>
+          <p class="value">{{ user.stats?.favoriteSport || '—' }}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="content-grid">
+      <section class="tabs-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Central de preferências</p>
+            <h3>Personalize sua experiência</h3>
+          </div>
+          <span class="active-tab-label">
+            <mat-icon>tune</mat-icon>
+            {{ activeTab === 'profile' ? 'Perfil' : activeTab === 'preferences' ? 'Feed e notificações' : 'Privacidade' }}
+          </span>
+        </div>
+
+        <mat-tab-group
+          class="settings-tabs"
+          [selectedIndex]="selectedTabIndex"
+          (selectedIndexChange)="switchTab(tabs[$event])"
+          animationDuration="300ms"
+          mat-stretch-tabs>
+          <mat-tab label="Perfil">
+            <div class="tab-content">
+              <app-profile-edit-form
+                [user]="user"
+                (save)="onProfileSave($event)"
+                (cancel)="onCancel()">
+              </app-profile-edit-form>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Preferências">
+            <div class="tab-content">
+              <app-preferences-form
+                [user]="user"
+                (save)="onPreferencesSave($event)"
+                (cancel)="onCancel()">
+              </app-preferences-form>
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Privacidade">
+            <div class="tab-content">
+              <app-privacy-form
+                [user]="user"
+                (save)="onPrivacySave($event)"
+                (cancel)="onCancel()">
+              </app-privacy-form>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </section>
+
+      <aside class="insights-panel">
+        <div class="info-card">
+          <div class="card-title">
+            <mat-icon>shield</mat-icon>
+            <div>
+              <p class="eyebrow">Privacidade</p>
+              <h4>Status atual</h4>
+            </div>
+          </div>
+          <p>{{ privacySummary }}</p>
+        </div>
+
+        <div class="info-card">
+          <div class="card-title">
+            <mat-icon>sports_soccer</mat-icon>
+            <div>
+              <p class="eyebrow">Esportes</p>
+              <h4>Favoritos</h4>
+            </div>
+          </div>
+          <p>{{ favoriteSportsSummary }}</p>
+          <div class="chips-preview" *ngIf="user.preferences?.favoriteSports?.length">
+            <span class="chip" *ngFor="let sport of user.preferences?.favoriteSports | slice:0:4">{{ sport }}</span>
+          </div>
+        </div>
+
+        <div class="info-card tips">
+          <div class="card-title">
+            <mat-icon>tips_and_updates</mat-icon>
+            <div>
+              <p class="eyebrow">Dicas</p>
+              <h4>Como aproveitar melhor</h4>
+            </div>
+          </div>
+          <ul>
+            <li>Use uma foto marcante e conte sobre seus projetos esportivos.</li>
+            <li>Ative notificações apenas para conteúdos que fazem sentido para você.</li>
+            <li>Revise a privacidade sempre que começar um novo projeto.</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </ng-container>
+</div>
+
+<ng-template #loadingState>
+  <div class="state-card">
+    <mat-spinner diameter="48"></mat-spinner>
+    <p>Carregando suas configurações...</p>
+  </div>
+</ng-template>

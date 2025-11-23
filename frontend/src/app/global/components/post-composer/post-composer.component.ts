@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { StravaService } from '../../../core/services/strava.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { WorkoutActivitiesService, WorkoutActivity } from '../../../core/services/workout-activities.service';
 import { WorkoutSelectorComponent } from '../../../shared/components/workout-selector/workout-selector.component';
-import { switchMap, take } from 'rxjs';
+import { switchMap, take, debounceTime, distinctUntilChanged, Subject, of, catchError } from 'rxjs';
+import { UsersService } from '../../../core/services/users.service';
+import { PublicUser } from '../../../core/models/post.model';
 
 type ComposerAction = {
   icon: 'highlight' | 'stats' | 'analysis' | 'workout' | 'route' | 'achievement' | 'challenge';
@@ -26,6 +28,9 @@ type HighlightSuggestion = {
 })
 export class PostComposerComponent {
   @Output() readonly submitPost = new EventEmitter<{ content: string; workoutActivityIds?: string[] }>();
+  @ViewChild('composerTextarea') composerTextarea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('composerInputArea') composerInputArea?: ElementRef<HTMLDivElement>;
+  @ViewChild('mentionPanel') mentionPanel?: ElementRef<HTMLDivElement>;
 
   isExpanded = false;
   postContent = '';
@@ -33,6 +38,14 @@ export class PostComposerComponent {
   showWorkoutSelector = false;
   activeAction: ComposerAction['icon'] | null = null;
   highlightSuggestion: HighlightSuggestion | null = null;
+
+  // Mention properties
+  mentionSuggestions: PublicUser[] = [];
+  showMentionSuggestions = false;
+  mentionSearchTerm = '';
+  private mentionSearchSubject = new Subject<string>();
+  mentionPanelPosition = { top: 0, left: 0 };
+  
   private readonly workoutAccents: Record<string, string> = {
     run: '#1d9bf0',
     ride: '#1780d6',
@@ -70,9 +83,12 @@ export class PostComposerComponent {
   constructor(
     private readonly stravaService: StravaService,
     private readonly authService: AuthService,
-  public readonly workoutService: WorkoutActivitiesService,
+    public readonly workoutService: WorkoutActivitiesService,
+    private readonly usersService: UsersService,
     private readonly dialog: MatDialog
-  ) {}
+  ) {
+    this.setupMentionSearch();
+  }
 
   get userName(): string {
     return this.authService.currentUser?.name || 'Usuário';
@@ -85,6 +101,11 @@ export class PostComposerComponent {
 
   get userInitials(): string {
     return this.computeInitials(this.userName);
+  }
+
+  getMentionInitials(user: PublicUser): string {
+    const source = user.name?.trim() || user.username?.trim() || 'Usuário';
+    return this.computeInitials(source);
   }
 
   private computeInitials(name: string): string {
@@ -426,5 +447,134 @@ export class PostComposerComponent {
     };
 
     return iconMap[type] || 'fitness_center';
+  }
+
+  // Mention Logic
+
+  private setupMentionSearch(): void {
+    this.mentionSearchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (!term || term.trim().length === 0) {
+          return this.usersService.getSuggestions().pipe(
+            catchError(() => of([]))
+          );
+        }
+        if (term.length < 2) {
+          return of([]);
+        }
+        return this.usersService.searchUsers(term).pipe(
+          catchError(() => of([]))
+        );
+      })
+    ).subscribe(users => {
+      this.mentionSuggestions = users;
+      this.showMentionSuggestions = users.length > 0;
+
+      if (this.showMentionSuggestions) {
+        setTimeout(() => this.repositionMentionPanel());
+      }
+    });
+  }
+
+  onInput(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement;
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = this.postContent.substring(0, cursorPosition);
+    
+    // Check for @ mention
+    const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtSymbol !== -1) {
+      // Check if there's a space before @ (or it's the start of the line)
+      const charBeforeAt = lastAtSymbol > 0 ? textBeforeCursor[lastAtSymbol - 1] : ' ';
+      
+      if (charBeforeAt === ' ' || charBeforeAt === '\n') {
+        const searchTerm = textBeforeCursor.substring(lastAtSymbol + 1).trim();
+        // Only search if there are no spaces in the search term (simple username check)
+        if (!searchTerm.includes(' ')) {
+          this.mentionSearchTerm = searchTerm;
+          this.mentionSearchSubject.next(searchTerm);
+          this.updateMentionPanelPosition(textarea, lastAtSymbol, cursorPosition);
+          return;
+        }
+      }
+    }
+    
+    this.showMentionSuggestions = false;
+    this.mentionSuggestions = [];
+  }
+
+  selectMention(user: PublicUser): void {
+    const textarea = this.composerTextarea?.nativeElement;
+    if (!textarea) {
+      return;
+    }
+
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = this.postContent.substring(0, cursorPosition);
+    const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+    
+    const textAfterCursor = this.postContent.substring(cursorPosition);
+    const textBeforeAt = this.postContent.substring(0, lastAtSymbol);
+    
+    this.postContent = `${textBeforeAt}@${user.username || user.name.replace(/\s+/g, '').toLowerCase()} ${textAfterCursor}`;
+    
+    this.showMentionSuggestions = false;
+    this.mentionSuggestions = [];
+    
+    // Restore focus and cursor position (optional, might need adjustment)
+    setTimeout(() => {
+      textarea.focus();
+      const username = user.username || user.name.replace(/\s+/g, '').toLowerCase();
+      const newCursorPos = lastAtSymbol + username.length + 2; // @ + username + space
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    });
+  }
+
+  private updateMentionPanelPosition(textarea: HTMLTextAreaElement, atIndex: number, cursorPosition: number): void {
+    const inputArea = this.composerInputArea?.nativeElement;
+    if (!inputArea) {
+      this.mentionPanelPosition = { top: 0, left: 0 };
+      return;
+    }
+
+    const selection = textarea.value.substring(0, cursorPosition);
+    const lines = selection.split('\n');
+    const currentLine = lines[lines.length - 1] ?? '';
+    const charsBeforeAt = currentLine.length - (cursorPosition - atIndex);
+    const approxCharWidth = 7.2;
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight || '24', 10) || 24;
+
+    const desiredLeft = textarea.offsetLeft - textarea.scrollLeft + Math.max(0, charsBeforeAt) * approxCharWidth;
+    const baseTop = textarea.offsetTop - textarea.scrollTop + (lines.length - 1) * lineHeight;
+
+    const panelWidth = this.mentionPanel?.nativeElement?.offsetWidth ?? 0;
+    const panelHeight = this.mentionPanel?.nativeElement?.offsetHeight ?? 0;
+    const paddingOffset = 12;
+
+    const maxLeft = Math.max(paddingOffset, inputArea.clientWidth - panelWidth - paddingOffset);
+    const safeLeft = Math.min(Math.max(paddingOffset, desiredLeft), maxLeft);
+    const safeTop = Math.max(0, baseTop - panelHeight - paddingOffset);
+
+    this.mentionPanelPosition = { top: safeTop, left: safeLeft };
+  }
+
+  repositionMentionPanel(): void {
+    if (!this.showMentionSuggestions || !this.composerTextarea) {
+      return;
+    }
+
+    const textarea = this.composerTextarea.nativeElement;
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = this.postContent.substring(0, cursorPosition);
+    const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+
+    if (lastAtSymbol === -1) {
+      return;
+    }
+
+    this.updateMentionPanelPosition(textarea, lastAtSymbol, cursorPosition);
   }
 }

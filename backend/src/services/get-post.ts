@@ -15,7 +15,10 @@ const defaultPostRelations = [
     "comments.author",
     "likes",
     "likes.user",
-    "repostedBy"
+    "repostedBy",
+    "workoutActivity",
+    "workoutActivities",
+    "hashtags"
 ];
 
 export const getPost = async ({ id, relations }: GetPostParams): Promise<Post | undefined> => {

@@ -29,9 +29,7 @@
       <div *ngFor="let post of posts" class="post-item">
         <div class="post-card">
           <div class="post-header">
-            <img [src]="post.author?.profilePicture || '/assets/default-avatar.png'" 
-                 alt="Avatar" 
-                 class="avatar">
+            <img [src]="post.author?.profilePicture || '/assets/default-avatar.png'" alt="Avatar" class="avatar">
             <div class="post-author">
               <span class="author-name">{{ post.author?.name || 'Usuário' }}</span>
               <span class="author-username">{{ post.author?.username || 'user' }}</span>
@@ -67,4 +65,3 @@
     </div>
   </div>
 </div>
-

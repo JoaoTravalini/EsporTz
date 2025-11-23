@@ -4,6 +4,9 @@ export interface User {
   email: string;
   imgURL: string | null;
   provider: string;
+  bio?: string | null;
+  location?: string | null;
+  website?: string | null;
   preferences?: {
     favoriteSports: string[];
     notifications: {

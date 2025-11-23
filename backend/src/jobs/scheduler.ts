@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import { calculateSimilaritiesBatch } from "./similarity-calculator.js";
-import { updateTrendingCache } from "../services/trending-service.js";
+
 
 /**
  * Configura e inicia todos os jobs agendados
@@ -19,16 +19,7 @@ export function startScheduledJobs(): void {
     });
     console.log("✅ Similarity calculation job scheduled (every 6 hours)");
 
-    // Job 2: Atualizar cache de trending hashtags a cada 15 minutos
-    cron.schedule("*/15 * * * *", async () => {
-        console.log("🔄 Running trending cache update job...");
-        try {
-            await updateTrendingCache();
-        } catch (error) {
-            console.error("❌ Trending cache update job failed:", error);
-        }
-    });
-    console.log("✅ Trending cache update job scheduled (every 15 minutes)");
+
 
     console.log("✅ All scheduled jobs started successfully");
 }

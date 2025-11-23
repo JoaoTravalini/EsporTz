@@ -9,6 +9,8 @@ import type { TacticalComment } from "./TacticalComment.js";
 import type { Team } from "./Team.js";
 import type { Match } from "./Match.js";
 import type { Group } from "./group-entity.js";
+import type { Mention } from "./mention-entity.js";
+import type { Notification } from "./notification-entity.js";
 
 @Entity() 
 export class User extends BaseEntity  {
@@ -27,6 +29,15 @@ export class User extends BaseEntity  {
 
     @Column({ type: "string" })
     provider!:string;
+
+    @Column({ type: "text", nullable: true })
+    bio!:string | null;
+
+    @Column({ type: "string", nullable: true })
+    location!:string | null;
+
+    @Column({ type: "string", nullable: true })
+    website!:string | null;
 
     @BeforeInsert()
     hashPassword() {
@@ -110,4 +121,16 @@ export class User extends BaseEntity  {
         totalLikes: number;
         favoriteSport?: string;
     };
+
+    // Menções recebidas
+    @OneToMany("Mention", "mentionedUser")
+    mentions!: Mention[];
+
+    // Notificações recebidas
+    @OneToMany("Notification", "recipient")
+    notifications!: Notification[];
+
+    // Notificações onde o usuário é o ator
+    @OneToMany("Notification", "actor")
+    actorNotifications!: Notification[];
 }

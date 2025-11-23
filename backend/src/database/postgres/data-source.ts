@@ -16,6 +16,8 @@ import { MatchEvent } from "./entities/MatchEvent.js";
 import { WorkoutActivity } from "./entities/workout-activity.js";
 import { PostWorkoutActivity } from "./entities/post-workout-activity.js";
 import { Hashtag } from "./entities/hashtag-entity.js";
+import { Mention } from "./entities/mention-entity.js";
+import { Notification } from "./entities/notification-entity.js";
 
 dotenv.config();
 
@@ -45,7 +47,9 @@ export const AppDataSource = new DataSource({
     MatchEvent,
     WorkoutActivity,
     PostWorkoutActivity,
-    Hashtag
+    Hashtag,
+    Mention,
+    Notification
   ],
   migrations: ["src/database/postgres/migrations/*.ts"],
   migrationsTableName: "migrations",

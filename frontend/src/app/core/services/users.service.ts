@@ -15,6 +15,21 @@ interface UserProfileResponse {
   user: User;
 }
 
+interface PreferencesFormData {
+  favoriteSports?: string[];
+  notifications?: {
+    highlights?: boolean;
+    analyses?: boolean;
+    matches?: boolean;
+    followedTeams?: boolean;
+  };
+  privacy?: {
+    profilePublic?: boolean;
+    showStats?: boolean;
+    allowAnalysisSharing?: boolean;
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class UsersService {
   private readonly usersUrl = `${environment.apiUrl}/users`;
@@ -38,7 +53,16 @@ export class UsersService {
       .pipe(map(response => response.suggestions));
   }
 
+  searchUsers(query: string): Observable<PublicUser[]> {
+    return this.http
+      .get<{ users: PublicUser[] }>(`${this.usersUrl}/search`, {
+        params: { q: query }
+      })
+      .pipe(map(response => response.users));
+  }
+
   getUserProfile(userId: string): Observable<User> {
+    console.log(this.usersUrl)
     return this.http
       .get<UserProfileResponse>(`${this.usersUrl}/${userId}`)
       .pipe(
@@ -46,6 +70,36 @@ export class UsersService {
         catchError(error => {
           console.error('Error fetching user profile:', error);
           return throwError(() => new Error('Não foi possível carregar o perfil do usuário.'));
+        })
+      );
+  }
+
+  updateUserProfile(userId: string, data: {
+    name?: string;
+    bio?: string;
+    location?: string;
+    website?: string;
+    imgURL?: string;
+  }): Observable<User> {
+    return this.http
+      .put<UserProfileResponse>(`${this.usersUrl}/${userId}`, data)
+      .pipe(
+        map(response => response.user),
+        catchError(error => {
+          console.error('Error updating user profile:', error);
+          return throwError(() => error);
+        })
+      );
+  }
+
+  updateUserPreferences(userId: string, preferences: PreferencesFormData): Observable<User> {
+    return this.http
+      .put<UserProfileResponse>(`${this.usersUrl}/${userId}/preferences`, { preferences })
+      .pipe(
+        map(response => response.user),
+        catchError(error => {
+          console.error('Error updating user preferences:', error);
+          return throwError(() => error);
         })
       );
   }

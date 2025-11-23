@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,AfterViewInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { PostsService } from '../../core/services/posts.service';
 import { UsersService } from '../../core/services/users.service';
 import { PublicPost, PublicUser } from '../../core/models/post.model';
 import { AuthService } from '../../core/services/auth.service';
+import { User } from '../../core/models';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,7 @@ export class HomeComponent implements OnInit {
 
   readonly feedTabs = ['Recentes', 'Amigos', 'Popular'];
   selectedTab = this.feedTabs[0];
-
+  public user!:User
   readonly stories = [
     {
       title: 'Treino na altitude',
@@ -68,9 +69,17 @@ export class HomeComponent implements OnInit {
     this.loadFeed();
     this.loadSuggestions();
   }
+ngAfterViewInit() {
+    this.usersService.getUserProfile(this.currentUser?.id as string).subscribe({
+      next: (user) => {
+        this.user = user;
+  },
+  error:(err)=>console.log(err)
+})
 
-  get currentUser(): PublicUser | null {
-    return this.authService.currentUser;
+}
+  get currentUser() {
+    return this.user?this.user:this.authService.currentUser
   }
 
   get userInitials(): string {
@@ -148,7 +157,7 @@ export class HomeComponent implements OnInit {
         }
       });
   }
-
+  
   handleLike(postId: string): void {
     if (this.likePending[postId]) {
       return;

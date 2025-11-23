@@ -1,0 +1,41 @@
+<div class="notifications-container">
+  <div class="header">
+    <h2>Notifications</h2>
+    <button *ngIf="unreadCount > 0" (click)="markAllAsRead()" class="mark-all-read">
+      Mark all as read
+    </button>
+  </div>
+
+  <div class="notification-list">
+    <div *ngIf="notifications.length === 0" class="empty-state">
+      No notifications yet.
+    </div>
+
+    <div *ngFor="let notification of notifications" 
+         class="notification-item" 
+         [class.unread]="!notification.read"
+         (click)="markAsRead(notification)">
+      
+      <div class="avatar">
+        <img [src]="notification.actor.avatar || 'assets/default-avatar.png'" [alt]="notification.actor.username">
+      </div>
+
+      <div class="content">
+        <div class="message">
+          <span class="username">{{ notification.actor.username }}</span>
+          {{ getNotificationMessage(notification) }}
+        </div>
+        
+        <div *ngIf="notification.post" class="post-preview">
+          {{ notification.post.content | slice:0:50 }}{{ notification.post.content.length > 50 ? '...' : '' }}
+        </div>
+
+        <div class="time">
+          {{ notification.createdAt | date:'short' }}
+        </div>
+      </div>
+      
+      <div *ngIf="!notification.read" class="unread-indicator"></div>
+    </div>
+  </div>
+</div>

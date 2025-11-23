@@ -106,10 +106,14 @@ export async function upsertHashtags(tags: string[], content: string): Promise<H
 export async function syncHashtagsToNeo4j(
     postId: string,
     hashtags: Hashtag[],
-    userId: string
+    userId: string,
+    options: { postCreatedAt?: Date; postUpdatedAt?: Date } = {}
 ): Promise<void> {
     if (hashtags.length === 0) return;
     
+    const postCreatedAt = (options.postCreatedAt ?? new Date()).toISOString();
+    const postUpdatedAt = (options.postUpdatedAt ?? options.postCreatedAt ?? new Date()).toISOString();
+
     try {
         // Cria nós Hashtag e relacionamentos HAS_TAG
         await driver.executeQuery(
@@ -118,13 +122,19 @@ export async function syncHashtagsToNeo4j(
              ON CREATE SET h.displayTag = hashtagData.displayTag
              
              MERGE (p:Post {id: $postId})
+             ON CREATE SET p.createdAt = datetime($postCreatedAt), p.authorId = $userId
+             SET p.updatedAt = datetime($postUpdatedAt),
+                 p.authorId = coalesce(p.authorId, $userId)
              MERGE (p)-[:HAS_TAG]->(h)`,
             {
                 postId,
+                userId,
                 hashtags: hashtags.map(h => ({
                     tag: h.tag,
                     displayTag: h.displayTag
-                }))
+                })),
+                postCreatedAt,
+                postUpdatedAt
             }
         );
         

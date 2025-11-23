@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, UpdateDateColumn, type Relation } from 'typeorm';
 import { Highlight } from './Highlight.js';
 import { TacticalAnalysis } from './TacticalAnalysis.js';
 import { Match } from './Match.js';
@@ -33,13 +33,13 @@ export class Sport {
   };
 
   @OneToMany(() => Highlight, (highlight: Highlight) => highlight.sport)
-  highlights!: Highlight[];
+  highlights!: Relation<Highlight>[];
 
   @OneToMany(() => TacticalAnalysis, (analysis: TacticalAnalysis) => analysis.sport)
-  tacticalAnalyses!: TacticalAnalysis[];
+  tacticalAnalyses!: Relation<TacticalAnalysis>[];
 
   @OneToMany(() => Match, (match: Match) => match.sport)
-  matches!: Match[];
+  matches!: Relation<Match>[];
 
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;

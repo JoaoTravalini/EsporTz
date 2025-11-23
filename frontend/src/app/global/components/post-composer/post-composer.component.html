@@ -1,29 +1,37 @@
 <section class="composer" [class.composer--expanded]="isExpanded">
   <header class="composer__top">
     <div class="avatar" aria-hidden="true">{{ userInitials }}</div>
-    <button
-      *ngIf="!isExpanded"
-      type="button"
-      class="composer__prompt"
-      (click)="openComposer()"
-    >
+    <button *ngIf="!isExpanded" type="button" class="composer__prompt" (click)="openComposer()">
       Comece uma publicação
     </button>
-    <div *ngIf="isExpanded" class="composer__input-area">
-      <textarea
-        class="composer__textarea"
-        rows="4"
-        placeholder="Compartilhe seus treinos, resultados ou insights esportivos"
-        [(ngModel)]="postContent"
-      ></textarea>
+    <div *ngIf="isExpanded" class="composer__input-area" #composerInputArea>
+      <textarea #composerTextarea class="composer__textarea" rows="4"
+        placeholder="Compartilhe seus treinos, resultados ou insights esportivos" [(ngModel)]="postContent"
+        (input)="onInput($event)" (scroll)="repositionMentionPanel()"></textarea>
+
+      <!-- Mention Suggestions -->
+      <div *ngIf="showMentionSuggestions" class="mention-suggestions" #mentionPanel
+        [style.top.px]="mentionPanelPosition.top" [style.left.px]="mentionPanelPosition.left"
+        role="listbox" aria-label="Sugestões de menção">
+        <div *ngFor="let user of mentionSuggestions" class="mention-suggestion-item" role="option"
+          (click)="selectMention(user)">
+          <div class="mention-avatar" [class.mention-avatar--initials]="!user.imgURL">
+            <img *ngIf="user.imgURL; else initials" [src]="user.imgURL" alt="" class="mention-avatar__image">
+            <ng-template #initials>
+              <span class="mention-avatar__initials">{{ getMentionInitials(user) }}</span>
+            </ng-template>
+          </div>
+          <div class="mention-info">
+            <span class="mention-name">{{ user.name }}</span>
+            <span class="mention-username">&#64;{{ user.username }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Treinos selecionados -->
-    <div
-      *ngIf="isExpanded && hasSelectedWorkouts"
-      class="selected-workouts composer__selected-workouts"
-      [ngStyle]="{'--selected-accent': getWorkoutAccent(getSelectedAccentType())}"
-    >
+    <div *ngIf="isExpanded && hasSelectedWorkouts" class="selected-workouts composer__selected-workouts"
+      [ngStyle]="{'--selected-accent': getWorkoutAccent(getSelectedAccentType())}">
       <div class="selected-workouts__header">
         <div class="selected-workouts__headline">
           <div class="selected-workouts__icon">
@@ -37,23 +45,15 @@
             </span>
           </div>
         </div>
-        <button
-          type="button"
-          mat-icon-button
-          (click)="clearSelectedWorkouts()"
-          class="selected-workouts__clear"
-          [attr.aria-label]="'Limpar ' + selectedWorkoutsCount + ' treinos selecionados'"
-        >
+        <button type="button" mat-icon-button (click)="clearSelectedWorkouts()" class="selected-workouts__clear"
+          [attr.aria-label]="'Limpar ' + selectedWorkoutsCount + ' treinos selecionados'">
           <mat-icon>clear</mat-icon>
         </button>
       </div>
 
       <div class="selected-workouts__list">
-        <article
-          *ngFor="let workout of selectedWorkouts; trackBy: trackByWorkoutId"
-          class="selected-workouts__item"
-          [ngStyle]="{'--item-accent': getWorkoutAccent(workout.type)}"
-        >
+        <article *ngFor="let workout of selectedWorkouts; trackBy: trackByWorkoutId" class="selected-workouts__item"
+          [ngStyle]="{'--item-accent': getWorkoutAccent(workout.type)}">
           <div class="item__icon">
             <mat-icon>{{ getWorkoutIcon(workout.type) }}</mat-icon>
           </div>
@@ -61,13 +61,8 @@
           <div class="item__body">
             <div class="item__header">
               <div class="item__name" [matTooltip]="workout.name">{{ workout.name }}</div>
-              <button
-                type="button"
-                mat-icon-button
-                (click)="removeWorkout(workout)"
-                class="item__remove"
-                [attr.aria-label]="'Remover ' + workout.name"
-              >
+              <button type="button" mat-icon-button (click)="removeWorkout(workout)" class="item__remove"
+                [attr.aria-label]="'Remover ' + workout.name">
                 <mat-icon>close</mat-icon>
               </button>
             </div>
@@ -122,34 +117,34 @@
 
   <footer class="composer__bottom">
     <div class="composer__actions" role="list">
-      <button
-        type="button"
-        class="action"
-        *ngFor="let action of actions"
-        [attr.aria-label]="action.description"
-  [class.action--disabled]="action.requiresStrava && !isStravaConnected"
-  [class.action--active]="activeAction === action.icon || (action.icon === 'workout' && hasSelectedWorkouts)"
+      <button type="button" class="action" *ngFor="let action of actions" [attr.aria-label]="action.description"
+        [class.action--disabled]="action.requiresStrava && !isStravaConnected"
+        [class.action--active]="activeAction === action.icon || (action.icon === 'workout' && hasSelectedWorkouts)"
         [attr.title]="action.requiresStrava && !isStravaConnected ? 'Conecte-se ao Strava para usar esta funcionalidade' : action.description"
-        (click)="handleActionClick(action)"
-      >
+        (click)="handleActionClick(action)">
         <span class="action__icon" aria-hidden="true" [ngSwitch]="action.icon">
-          <svg *ngSwitchCase="'highlight'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6.5 4.5L13 1L19.5 4.5L22 12.5L19 20.5H7L4 12.5L6.5 4.5Z" fill="#FFD1A0" stroke="#1F2530" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M11 9.5L16 12.5L11 15.5V9.5Z" fill="#FFFFFF"/>
+          <svg *ngSwitchCase="'highlight'" width="26" height="26" viewBox="0 0 26 26" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.5 4.5L13 1L19.5 4.5L22 12.5L19 20.5H7L4 12.5L6.5 4.5Z" fill="#FFD1A0" stroke="#1F2530"
+              stroke-width="1.5" stroke-linejoin="round" />
+            <path d="M11 9.5L16 12.5L11 15.5V9.5Z" fill="#FFFFFF" />
           </svg>
-          <svg *ngSwitchCase="'stats'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="3" y="10" width="4" height="12" rx="1.5" fill="#1F2530"/>
-            <rect x="10.5" y="6" width="4" height="16" rx="1.5" fill="#FFA163"/>
-            <rect x="18" y="12" width="4" height="10" rx="1.5" fill="#1F2530"/>
-            <path d="M4 6L9 9L15 5.5L20 8L22.5 6" stroke="#FFB075" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg *ngSwitchCase="'stats'" width="26" height="26" viewBox="0 0 26 26" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="10" width="4" height="12" rx="1.5" fill="#1F2530" />
+            <rect x="10.5" y="6" width="4" height="16" rx="1.5" fill="#FFA163" />
+            <rect x="18" y="12" width="4" height="10" rx="1.5" fill="#1F2530" />
+            <path d="M4 6L9 9L15 5.5L20 8L22.5 6" stroke="#FFB075" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
           </svg>
-          <svg *ngSwitchCase="'analysis'" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="4" width="16" height="18" rx="2" fill="#FFD1A0"/>
-            <path d="M8 9H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M8 13H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M8 17H14" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/>
-            <circle cx="19.5" cy="19.5" r="4" fill="#1F2530"/>
-            <path d="M19.5 17.5V21.5M17.5 19.5H21.5" stroke="#FFE2B2" stroke-width="1.4" stroke-linecap="round"/>
+          <svg *ngSwitchCase="'analysis'" width="26" height="26" viewBox="0 0 26 26" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="4" width="16" height="18" rx="2" fill="#FFD1A0" />
+            <path d="M8 9H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" />
+            <path d="M8 13H18" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" />
+            <path d="M8 17H14" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" />
+            <circle cx="19.5" cy="19.5" r="4" fill="#1F2530" />
+            <path d="M19.5 17.5V21.5M17.5 19.5H21.5" stroke="#FFE2B2" stroke-width="1.4" stroke-linecap="round" />
           </svg>
           <mat-icon *ngSwitchCase="'workout'" class="workout-action-icon">
             fitness_center
@@ -239,12 +234,7 @@
             <button type="button" class="btn btn--ghost" (click)="openWorkoutSelector()">
               Escolher atividades
             </button>
-            <button
-              type="button"
-              class="btn btn--ghost"
-              *ngIf="hasSelectedWorkouts"
-              (click)="clearSelectedWorkouts()"
-            >
+            <button type="button" class="btn btn--ghost" *ngIf="hasSelectedWorkouts" (click)="clearSelectedWorkouts()">
               Limpar seleção
             </button>
           </div>
@@ -254,12 +244,7 @@
 
     <div *ngIf="isExpanded" class="composer__controls">
       <button type="button" class="btn btn--ghost" (click)="handleCancel()">Cancelar</button>
-      <button
-        type="button"
-        class="btn btn--primary"
-        [disabled]="!canSubmit"
-        (click)="handleSubmit()"
-      >
+      <button type="button" class="btn btn--primary" [disabled]="!canSubmit" (click)="handleSubmit()">
         Publicar
       </button>
     </div>

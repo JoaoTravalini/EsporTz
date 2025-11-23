@@ -11,9 +11,5 @@ dotenv.config();
     process.exit(1);
   }
 
-  export const driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD), {
-      encrypted: "ENCRYPTION_OFF",
-
-    trust: "TRUST_SYSTEM_CA_SIGNED_CERTIFICATES",
-  });
+  export const driver = neo4j.driver(URI, neo4j.auth.basic(USER, PASSWORD));
 

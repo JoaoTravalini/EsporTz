@@ -45,4 +45,20 @@ export class RecommendationService {
       { params }
     );
   }
+
+  /**
+   * Segue um usuário
+   */
+  followUser(followerId: string, userId: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/users/${userId}/follow`, { followerId });
+  }
+
+  /**
+   * Deixa de seguir um usuário
+   */
+  unfollowUser(followerId: string, userId: string): Observable<any> {
+    return this.http.request('delete', `${environment.apiUrl}/users/${userId}/follow`, {
+      body: { followerId }
+    });
+  }
 }
